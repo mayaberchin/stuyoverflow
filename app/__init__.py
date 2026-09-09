@@ -187,15 +187,15 @@ def skills():
 @login_required
 def render_post_page(page):
     page_info = POST_PAGE_INFO[page]
-    can_post = page != "announcements" or data.is_stuy_teacher(session['user']['email'])
+    can_post = page != 'announcements' or data.is_stuy_teacher(session['user']['email'])
     return render_template(
-        "post_page.html",
+        'post_page.html',
         page_title=page_info['page_title'],
         page_description=page_info['page_description'],
         selected_post_type=page_info['selected_post_type'],
         new_post_label=page_info['new_post_label'],
         can_post=can_post,
-        current_user_email=session['email']
+        current_user_email=session['user']['email']
     )
 
 @app.route("/announcements")
