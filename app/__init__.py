@@ -104,7 +104,7 @@ def authorized():
 
 def register_user():
     email = session['user']['email']
-    if email[-8:] == 'stuy.edu' or email in WHITELIST:
+    if email[-9:] == '@stuy.edu' or email in WHITELIST:
         email = session['user']['email']
         name = session['user']['name']
         data.add_user(email, name)
