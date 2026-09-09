@@ -313,7 +313,7 @@ def api_create_post():
         return jsonify({"error": "Only teachers can post announcements"}), 403
 
     post_id = data.create_post( # returns new post_id
-        session["email"],
+        session['user']['email'],
         class_id,
         title,
         body,
@@ -362,7 +362,7 @@ def api_create_followup(post_id):
     if body == "":
         return jsonify({"error": "Missing followup body"}), 400
 
-    followup_id = data.create_followup(session["email"], post_id, body, is_anonymous)
+    followup_id = data.create_followup(session['user']['email'], post_id, body, is_anonymous)
     followup = data.get_post_data(followup_id)
     followup = add_display_author(followup)
     return jsonify({"followup": followup})
@@ -387,11 +387,11 @@ def api_toggle_upvote(post_id):
 
 def add_display_author(post):
     email = session['user']['email']
-    if post["is_anonymous"] == "yes":
-        post["display_author"] = "Anonymous"
+    if post['is_anonymous'] == 'yes':
+        post['display_author'] = 'Anonymous'
     else:
-        post["display_author"] = data.get_user_name(post["author_email"])
-    post["has_upvoted"] = 'email' in session and email in post["upvoters"]
+        post['display_author'] = data.get_user_name(post['author_email'])
+    post['has_upvoted'] = 'user' in session and email in post['upvoters']
     return post
 
 #join/create class:
