@@ -1,7 +1,8 @@
 import os
+import csv
 import uuid
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 from authlib.integrations.flask_client import OAuth
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -166,6 +167,8 @@ def home():
 @app.route('/skills', methods=['GET', 'POST'])
 @login_required
 def skills():
+    # OLD IMPLEMENTATION (OBSOLETE)
+    '''
     skills = ['common sense','reading comp','hw','timeliness','participation','comms','hardware','terminal','racket','prefix notation',
               'logic','conditionals','variables','functions','return types','recursion','loops','comments','turtles','patches','shapes','programs','interface','webpage']
     entries = [['overall',3.57,3.14,3.00,2.57,3.29,4.00,3.00,3.20,3.00,4.00,3.86,3.40,'-','-','-','-','-','-','-','-','-','-','-','-'],
@@ -181,6 +184,9 @@ def skills():
     is_whitelisted = email in WHITELIST
     return render_template('skills.html', name=session['user']['name'], email=email, is_stuy=str(is_stuy), is_whitelisted=str(is_whitelisted), skills=skills, entries=entries)
     #return render_template('skills.html', name='Maya', email='mayaberchin@gmail.com', is_stuy='False', is_whitelisted='True',  skills=skills, entries=entries)
+    '''
+    # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
+    return send_file('./static/skills.csv', as_attachment=True, attachment_filename='skills.csv')
 
 
 # ------------------ POST PAGES ------------------
