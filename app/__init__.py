@@ -116,7 +116,7 @@ def register_user():
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return redirect(url_for('index'))
+    return render_template('logout.html')
 
 #main
 @app.route('/home', methods=['GET', 'POST'])
