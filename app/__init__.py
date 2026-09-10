@@ -186,7 +186,16 @@ def skills():
     #return render_template('skills.html', name='Maya', email='mayaberchin@gmail.com', is_stuy='False', is_whitelisted='True',  skills=skills, entries=entries)
     '''
     # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
-    return send_file('./static/skills.csv', as_attachment=True, attachment_filename='skills.csv')
+    content=''
+    with open('./static/skills.csv') as f:
+        content = f.read()
+    return render_template('skills.html', content=content)
+
+@app.route('/skills', methods=['GET', 'POST'])
+@login_required
+def download_skills():
+    # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
+    return send_file('./static/skills.csv', as_attachment=True)
 
 
 # ------------------ POST PAGES ------------------
@@ -205,7 +214,7 @@ def render_post_page(page):
     )
 
 @app.route("/announcements")
-#login_required
+@login_required
 def announcements():
     return render_post_page("announcements")
 
