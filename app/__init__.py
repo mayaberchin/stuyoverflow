@@ -165,7 +165,7 @@ def home():
 
 # TEMP
 @app.route('/skills', methods=['GET', 'POST'])
-@login_required
+#login_required
 def skills():
     # OLD IMPLEMENTATION (OBSOLETE)
     '''
@@ -187,8 +187,8 @@ def skills():
     '''
     # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
     content=''
-    with open('./static/skills.csv') as f:
-        content = f.read()
+    with open('./static/skills.csv', 'r', encoding='UTF-8') as f:
+        content = f.readlines()
     return render_template('skills.html', content=content)
 
 @app.route('/download_skills', methods=['GET', 'POST'])
