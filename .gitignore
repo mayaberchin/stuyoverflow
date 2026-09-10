@@ -225,3 +225,6 @@ __marimo__/
 pdf.sh
 # Database file
 data.db
+# Stuff on Digital Ocean server
+update.sh
+wsgi.py
