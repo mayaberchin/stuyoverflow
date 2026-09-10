@@ -191,7 +191,7 @@ def skills():
         content = f.read()
     return render_template('skills.html', content=content)
 
-@app.route('/skills', methods=['GET', 'POST'])
+@app.route('/download_skills', methods=['GET', 'POST'])
 @login_required
 def download_skills():
     # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
