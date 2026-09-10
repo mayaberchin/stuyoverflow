@@ -58,10 +58,12 @@
 						</table>
 				</div>
 				-->
-				{% for line in content %}
-					{{ line }}
-					<br>
-				{% endfor %}
+				<div ml-2 mr-2>
+					{% for line in content %}
+						{{ line }}
+						<br>
+					{% endfor %}
+				</div>
 				<br>
 				<a href=" {{ url_for('download_skills') }} " class="btn btn-info ml-2" role="button"> Download CSV </a>
 				<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
