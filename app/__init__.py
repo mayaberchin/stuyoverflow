@@ -165,7 +165,7 @@ def home():
 
 # TEMP
 @app.route('/skills', methods=['GET', 'POST'])
-#login_required
+@login_required
 def skills():
     # OLD IMPLEMENTATION (OBSOLETE)
     '''
