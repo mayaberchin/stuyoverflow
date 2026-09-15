@@ -72,7 +72,7 @@ POST_PAGE_INFO = {
     },
 }
 
-def login_required(f):
+def login_req(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session:
@@ -106,7 +106,6 @@ def authorized():
 def register_user():
     email = session['user']['email']
     if email[-9:] == '@stuy.edu' or email in WHITELIST:
-        email = session['user']['email']
         name = session['user']['name']
         data.add_user(email, name)
         return redirect(url_for('home'))
@@ -120,7 +119,7 @@ def logout():
 
 #main
 @app.route('/home', methods=['GET', 'POST'])
-@login_required
+@login_req
 def home():
     # TEMP
     display_skills = True
@@ -165,7 +164,7 @@ def home():
 
 # TEMP
 @app.route('/skills', methods=['GET', 'POST'])
-@login_required
+@login_req
 def skills():
     # OLD IMPLEMENTATION (OBSOLETE)
     '''
@@ -192,14 +191,14 @@ def skills():
     return render_template('skills.html', content=content)
 
 @app.route('/download_skills', methods=['GET', 'POST'])
-@login_required
+@login_req
 def download_skills():
     # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
     return send_file('./static/skills.csv', as_attachment=True)
 
 
 # ------------------ POST PAGES ------------------
-@login_required
+@login_req
 def render_post_page(page):
     page_info = POST_PAGE_INFO[page]
     can_post = page != 'announcements' or data.is_stuy_teacher(session['user']['email'])
@@ -214,44 +213,44 @@ def render_post_page(page):
     )
 
 @app.route("/announcements")
-@login_required
+@login_req
 def announcements():
     return render_post_page("announcements")
 
 
 
 @app.route("/pinned")
-@login_required
+@login_req
 def pinned():
     return render_template("pinned.html")
     #return render_post_page("pinned")
 
 
 @app.route("/questions")
-@login_required
+@login_req
 def questions():
     return render_post_page("questions")
 
 
 @app.route("/chat")
-@login_required
+@login_req
 def chat():
     return render_post_page("chat")
 
 
 @app.route("/notes_resources")
-@login_required
+@login_req
 def notes_rsrc():
     return render_post_page("notes_resources")
 
 
 @app.route("/account")
-@login_required
+@login_req
 def account():
     return render_template("account.html")
 
 @app.route("/settings")
-@login_required
+@login_req
 def settings():
     return render_template("settings.html")
 
@@ -272,7 +271,7 @@ def api_classes():
 
 # loads posts
 @app.route("/api/posts")
-@login_required
+@login_req
 def api_posts():
     email = session['user']['email']
     category = request.args.get("category", "")
@@ -291,7 +290,7 @@ def api_posts():
 
 # ceates and saves a new post
 @app.route("/api/posts", methods=["POST"])
-@login_required
+@login_req
 def api_create_post():
     email = session['user']['email']
     
@@ -342,7 +341,7 @@ def api_create_post():
     return jsonify({"post": saved_post})
 
 @app.route("/api/posts/<post_id>/followups")
-@login_required
+@login_req
 def api_followups(post_id):
     email = session['user']['email']
     data.mark_read(email, post_id)
@@ -368,7 +367,7 @@ def api_followups(post_id):
     return jsonify({"followups": followups})
 
 @app.route("/api/posts/<post_id>/followups", methods=["POST"])
-@login_required
+@login_req
 def api_create_followup(post_id):
     post = request.get_json() or {}
     body = post.get("body", "").strip()
@@ -383,7 +382,7 @@ def api_create_followup(post_id):
     return jsonify({"followup": followup})
 
 @app.route("/api/posts/<post_id>/upvote", methods=["POST"])
-@login_required
+@login_req
 def api_toggle_upvote(post_id):
     email = session['user']['email']
     try:
@@ -411,7 +410,7 @@ def add_display_author(post):
 
 #join/create class:
 @app.route("/join_class", methods=["POST"])
-@login_required
+@login_req
 def join_a_class():
     email = session['user']['email']
     code = request.form.get("class_code")
@@ -422,7 +421,7 @@ def join_a_class():
     return redirect(url_for("home"))
 
 @app.route("/create_class_",methods=["POST"])
-@login_required
+@login_req
 def create_a_class():
     email = session['user']['email']
     class_name = request.form.get("class_name")
