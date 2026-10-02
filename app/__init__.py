@@ -123,9 +123,11 @@ def logout():
 @login_req
 def home():
     # TEMP
-    display_skills = True
-    if display_skills:
-        return redirect(url_for('skills'))
+    # display_skills = True
+    # if display_skills:
+    #     return redirect(url_for('skills'))
+
+
     email = session['user']['email']
     # get homepage posts
     homepage_post_ids = data.get_homepage_posts(email, 20)
@@ -154,7 +156,7 @@ def home():
         instructors_posts.append(teacher_post_data)
         print("3")
     return render_template(
-        "homepage.html",
+        "newHomepage.html",
         homepage_posts=homepage_posts,
         unresolved_posts=unresolved_posts,
         classes=classes,
@@ -189,7 +191,7 @@ def skills():
     content=''
     with open('./static/skills.csv', 'r', encoding='UTF-8') as f:
         content = f.readlines()
-    return render_template('skills.html', content=content)
+    return render_template('newSkills.html', content=content)
 
 @app.route('/download_skills', methods=['GET', 'POST'])
 @login_req
@@ -220,11 +222,11 @@ def announcements():
 
 
 
-@app.route("/pinned")
+@app.route("/saved")
 @login_req
-def pinned():
-    return render_template("pinned.html")
-    #return render_post_page("pinned")
+def saved():
+    # return render_template("saved.html")
+    return render_post_page("pinned")
 
 
 @app.route("/questions")
@@ -239,9 +241,15 @@ def chat():
     return render_post_page("chat")
 
 
+@app.route("/resources")
+@login_req
+def resources():
+    return render_template("resources")
+
+
 @app.route("/notes_resources")
 @login_req
-def notes_rsrc():
+def notes_resources():
     return render_post_page("notes_resources")
 
 
@@ -249,6 +257,12 @@ def notes_rsrc():
 @login_req
 def account():
     return render_template("account.html")
+
+
+@app.route("/calendar")
+@login_req
+def calendar():
+    return render_template("calendar.html")
 
 @app.route("/settings")
 @login_req
