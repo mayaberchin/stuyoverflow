@@ -472,3 +472,29 @@ LAST LOG
 - Basic dojo role implemented, can just check as dojo member upon signup
 - Fixed seeing posts you weren't supposed to
 - Generally tightened up things for the final demonstration
+
+==================================================================================================================
+
+POST SOFTDEV
+
+mayab -- 2026-09-02 01:41
+DECLARATION OF CONTINUATION
+- We the people of this project wanna make a good product damnit (think it will be useful)
+- As you can see leaving Stuy has not fixed my sleep schedule
+- Anyway Megan and I are going to continue working on this site, Christine MIA (I hope she's ok...)
+- Lowk we established this back in July. I just never logged it whoopsie. Good to be back
+
+mayab -- 2026-09-02 01:43
+DEVELOPMENTS: SUMMARY
+- Yes it's the same day but this should be a separate log
+- OVER THE PAST TWO MONTHS, THIS HAPPENED IN OUR CODEBASE:
+  - Added OAuth2
+    - restricted to stuy.edu + hardcoded whitelist (update so that teachers can edit)
+    - considered the following security concerns: HTTPS only, PKCE enabled, CSRF protection, secure cookies, OIDC ID-token validation, nonce validation, state validation
+    - code messy asf and needs to be rearranged
+  - Added a basic temporary skills page serving a bare table of grades
+  - On my branch, began working on a great database overhaul (AGAIN t-t)
+- THIS IS CURRENTLY HAPPENING OUTSIDE THE CODEBASE:
+  - Moving design doc to Google Docs (more convenient) (also overhauling DD)
+  - Writing up official documentation for our app
+  - Designing pages/UI on Google Slides

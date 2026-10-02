@@ -1,0 +1,126 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>StuyOverflow</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- navbar -->
+        <aside class="col-lg-2 col-md-3 border-end vh-100">
+            <div class="d-flex flex-sm-column flex-row flex-nowrap bg-light align-items-center sticky-top">
+                <ul class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
+                    <li class="nav-item">
+                        <a href="{{ url_for('home') }}" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                            H
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('announcements') }}" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Announcements">
+                            A
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('posts') }}" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Posts">
+                            P
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('chat') }}" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Chat">
+                            C
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('saved') }}" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Saved">
+                            S
+                        </a>
+                    </li>
+                </ul>
+
+
+                <!-- <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center justify-content-center p-3 link-dark text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-person-circle h2"></i>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser3">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                    </ul>
+                </div> -->
+
+
+            </div>
+        </aside>
+
+        
+        <!-- grid -->
+        <main class="col-lg-8 col-md-6">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+
+                <!-- square -->
+                <div class="col border p-3">
+                    <div class="row">
+                        <!-- class tag -->
+                         <div class="col-sm border">Graphics</div>
+                        <div class="col-sm">Followups 1234</div>
+                    </div>
+
+                    <!-- post brief -->
+                    <div class="row">
+                        blah blah blah
+                    </div>
+
+                    Tags
+                    <!-- class-tag -->
+                    <div class="row row-cols-4 row-colsmd-8">
+                        <div col="col-sm border"><a href="#">tag</a></div>
+                        <div col="col-sm border"><a href="#">tag</a></div>
+                        <div col="col-sm border"><a href="#">tag</a></div>
+                        <div col="col-sm border"><a href="#">tag</a></div>
+
+                    </div>
+
+                </div>
+
+                <div class="col">
+                    ...
+                </div>
+
+                <div class="col">
+                    ...
+                </div>
+
+            </div>
+        </main>
+
+        <!-- profile -->
+        <aside class="col-lg-2 col-md-3 bg-light vh-100">
+            <div class="dropdown"> 
+                <a href="#" class="d-flex align-items-center justify-content-end p-3 link-dark text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+                    profile
+                </a>
+                <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser3">
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                </ul>
+            </div>
+        </aside>
+
+
+
+    </div>
+</div>
+
+
+
+</body>
+</html> 

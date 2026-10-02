@@ -1,19 +1,49 @@
 import os
+import csv
 import uuid
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from validate_email import validate_email
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
+from authlib.integrations.flask_client import OAuth
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+from functools import wraps
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file
 import data
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = "vsecretandsecurekeyforstuyoverflow"
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1000 * 1000
-app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
+app.secret_key = os.getenv('APP_SECRET')
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+
+oauth = OAuth(app)
+
+google = oauth.register(
+    'google',
+    client_id=os.getenv('CLIENT_ID'),
+    client_secret=os.getenv('CLIENT_SECRET'),
+    access_token_url='https://oauth2.googleapis.com/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    client_kwargs={
+        'scope': 'openid email profile',
+        'code_challenge_method': 'S256',
+                   },
+
+    server_metadata_url= 'https://accounts.google.com/.well-known/openid-configuration'
+)
+
+
+
 data.create_tables()
 
 ALLOWED_UPLOADS = {"png", "jpg", "jpeg", "gif", "pdf", "txt", "doc", "docx"}
+
+WHITELIST = ['tm@stuycs.org', 'mayaberchin@gmail.com', 'megankwok168@gmail.com']
 
 POST_PAGE_INFO = {
     "announcements": {
@@ -42,72 +72,68 @@ POST_PAGE_INFO = {
     },
 }
 
-#login
-@app.route("/", methods=["GET", "POST"])
+def login_req(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/')
+def index():
+    return render_template('login-new.html')
+
+@app.route('/login')
 def login():
-    if 'email' in session:
-        return redirect(url_for('home'))
-    if request.method == 'POST':
-        email = request.form.get("email")
-        password = request.form.get("password")
-        if data.auth(email, password):
-            session['email'] = email
-            return redirect(url_for('home'))
-        else:
-            flash("Email or password incorrect. Try again.")
-            return redirect(url_for('login'))
-    return render_template('login.html')
+    redirect_uri = url_for('authorized', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
-
-#register
-@app.route("/register", methods = ['GET', "POST"])
-def set_user():
-    if 'username' in session:
+@app.route('/authorized')
+def authorized():
+    try:
+        token = google.authorize_access_token()
+        user_info = google.get('userinfo').json()
+        user_info['email'] = user_info['email'].lower()     # in case users entered their email with uppercase letters
+        session['user'] = user_info
+        email = session['user']['email']
+        if not data.user_exists(email):
+            return register_user()
         return redirect(url_for('home'))
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        is_dojo = False
-        if 'is_dojo' in request.form and request.form.get('is_dojo') == 'yes':
-            is_dojo = True
-        is_valid = True
-        is_valid = validate_email(email_address=email, check_format=True, check_smtp=True, smtp_timeout=10, dns_timeout=10, check_blacklist=True)
-        if is_valid == None or not is_valid:
-            flash("Please enter a valid email.")
-            return redirect(url_for('set_user'))
-        if data.user_exists(email):
-            flash("User already exists!")
-            return redirect(url_for('set_user'))
-        github = request.form.get('github')
-        name = request.form.get('name')
-        data.add_user(email, password, name, github)
-        if (is_dojo):
-            data.add_dojo(email)
-        session['email'] = email;
-        return redirect(url_for('home'))
-    return render_template('register.html')
+    except Exception as e:
+        #return 'Authorization error: ' + str(e)
+        return 'Authorization error. Please try again. <a href="/logout">Login with stuy.edu</a>'
 
-@app.route("/logout")
+def register_user():
+    email = session['user']['email']
+    if email[-9:] == '@stuy.edu' or email in WHITELIST:
+        name = session['user']['name']
+        data.add_user(email, name)
+        return redirect(url_for('home'))
+    session.pop('user', None)
+    return 'You are not signed in with a stuy.edu account, nor is your email on our whitelist. <a href="/">Login</a>'
+
+@app.route('/logout')
 def logout():
-    session.pop('email', None)
-    return redirect(url_for('login'))
+    session.pop('user', None)
+    return render_template('logout.html')
 
 #main
 @app.route('/home', methods=['GET', 'POST'])
+@login_req
 def home():
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    # return render_template("homepage.html")
+    # TEMP
+    display_skills = True
+    if display_skills:
+        return redirect(url_for('skills'))
+    email = session['user']['email']
     # get homepage posts
-    homepage_post_ids = data.get_homepage_posts(session['email'], 20)
+    homepage_post_ids = data.get_homepage_posts(email, 20)
     homepage_posts = []
     for post_id in homepage_post_ids["unread"]:
         post_data = data.get_post_data(post_id)
         homepage_posts.append(post_data)
     homepage_posts.reverse()
-
-    # get updated posts ============================need to do
-
     # get unresolved posts
     unresolved_post_ids = data.get_all_unresolved()
     unresolved_posts = []
@@ -115,23 +141,18 @@ def home():
         post_data = data.get_post_data(post_id)
         unresolved_posts.append(post_data)
     unresolved_posts.reverse()
-
-
-    class_ids = data.get_user_classes(session['email'])
+    class_ids = data.get_user_classes(email)
     classes = []
     instructors_posts = []
     for class_id in class_ids:
         # get course data
         class_data = data.get_class_data(class_id)
         classes.append(class_data)
-
-        # get instructors posts ===========================need to do
         print("1")
         teacher_post_data = data.get_teacher_posts(class_id)
         print("2")
         instructors_posts.append(teacher_post_data)
         print("3")
-
     return render_template(
         "homepage.html",
         homepage_posts=homepage_posts,
@@ -142,94 +163,100 @@ def home():
     )
 
 
+# TEMP
+@app.route('/skills', methods=['GET', 'POST'])
+@login_req
+def skills():
+    # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
+    content=''
+    with open('./static/skills.csv', 'r', encoding='UTF-8') as f:
+        content = f.readlines()
+    return render_template('skills.html', content=content)
 
+@app.route('/download_skills', methods=['GET', 'POST'])
+@login_req
+def download_skills():
+    # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
+    return send_file('./static/skills.csv', as_attachment=True)
 
 
 # ------------------ POST PAGES ------------------
-
+@login_req
 def render_post_page(page):
-    if 'email' not in session:
-        return redirect(url_for('login'))
-
     page_info = POST_PAGE_INFO[page]
-    can_post = page != "announcements" or data.is_stuy_teacher(session["email"])
+    can_post = page != 'announcements' or data.is_stuy_teacher(session['user']['email'])
     return render_template(
-        "post_page.html",
-        page_title=page_info["page_title"],
-        page_description=page_info["page_description"],
-        selected_post_type=page_info["selected_post_type"],
-        new_post_label=page_info["new_post_label"],
+        'post_page.html',
+        page_title=page_info['page_title'],
+        page_description=page_info['page_description'],
+        selected_post_type=page_info['selected_post_type'],
+        new_post_label=page_info['new_post_label'],
         can_post=can_post,
-        current_user_email=session["email"]
+        current_user_email=session['user']['email']
     )
 
 @app.route("/announcements")
+@login_req
 def announcements():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_post_page("announcements")
 
 
 
 @app.route("/pinned")
+@login_req
 def pinned():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_template("pinned.html")
     #return render_post_page("pinned")
 
 
 @app.route("/questions")
+@login_req
 def questions():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_post_page("questions")
 
 
 @app.route("/chat")
+@login_req
 def chat():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_post_page("chat")
 
 
 @app.route("/notes_resources")
+@login_req
 def notes_rsrc():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_post_page("notes_resources")
 
 
 @app.route("/account")
+@login_req
 def account():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_template("account.html")
 
 @app.route("/settings")
+@login_req
 def settings():
-    if 'email' not in session:
-        return redirect(url_for('login'))
     return render_template("settings.html")
 
 # ------------------ REACT POST API ROUTES ------------------
 
 @app.route("/api/classes")
 def api_classes():
+    email = session['user']['email']
     classes = []
-
-    for class_id in data.get_user_classes(session["email"]):
+    for class_id in data.get_user_classes(email):
         classes.append({
             "class_id": class_id,
             "name": data.get_class_name(class_id),
-            "is_teacher": data.is_class_teacher(class_id, session["email"]),
+            "is_teacher": data.is_class_teacher(class_id, email),
         })
 
     return jsonify({"classes": classes})
 
 # loads posts
 @app.route("/api/posts")
+@login_req
 def api_posts():
+    email = session['user']['email']
     category = request.args.get("category", "")
     all_posts = data.get_all_posts()
     all_posts = data.sort_by_ctime(all_posts) # newest posts first
@@ -239,14 +266,17 @@ def api_posts():
         post = data.get_post_data(post_id)
         post = add_display_author(post)
 
-        if post["parent_id"] == "" and (category == "" or post["category"] == category) and ((data.is_dojo(session["email"]) and post["show_dojo"] == "yes") or post["class_id"] in data.get_user_classes(session["email"])):
+        if post["parent_id"] == "" and (category == "" or post["category"] == category) and ((data.is_dojo(email) and post["show_dojo"] == "yes") or post["class_id"] in data.get_user_classes(email)):
             posts.append(post)
 
     return jsonify({"posts": posts})
 
 # ceates and saves a new post
 @app.route("/api/posts", methods=["POST"])
+@login_req
 def api_create_post():
+    email = session['user']['email']
+    
     if request.content_type and request.content_type.startswith("multipart/form-data"):
         post = request.form
     else:
@@ -276,11 +306,11 @@ def api_create_post():
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], file_name))
         attachment = url_for("static", filename="uploads/" + file_name)
 
-    if category == "announcement" and not data.is_class_teacher(class_id, session["email"]):
+    if category == "announcement" and not data.is_class_teacher(class_id, email):
         return jsonify({"error": "Only teachers can post announcements"}), 403
 
     post_id = data.create_post( # returns new post_id
-        session["email"],
+        session['user']['email'],
         class_id,
         title,
         body,
@@ -294,8 +324,10 @@ def api_create_post():
     return jsonify({"post": saved_post})
 
 @app.route("/api/posts/<post_id>/followups")
+@login_req
 def api_followups(post_id):
-    data.mark_read(session["email"], post_id)
+    email = session['user']['email']
+    data.mark_read(email, post_id)
     followup_ids = data.get_post_followups(post_id)
     if type(followup_ids) == list:
         followup_ids = {
@@ -318,6 +350,7 @@ def api_followups(post_id):
     return jsonify({"followups": followups})
 
 @app.route("/api/posts/<post_id>/followups", methods=["POST"])
+@login_req
 def api_create_followup(post_id):
     post = request.get_json() or {}
     body = post.get("body", "").strip()
@@ -326,52 +359,59 @@ def api_create_followup(post_id):
     if body == "":
         return jsonify({"error": "Missing followup body"}), 400
 
-    followup_id = data.create_followup(session["email"], post_id, body, is_anonymous)
+    followup_id = data.create_followup(session['user']['email'], post_id, body, is_anonymous)
     followup = data.get_post_data(followup_id)
     followup = add_display_author(followup)
     return jsonify({"followup": followup})
 
 @app.route("/api/posts/<post_id>/upvote", methods=["POST"])
+@login_req
 def api_toggle_upvote(post_id):
+    email = session['user']['email']
     try:
         post = data.get_post_data(post_id)
     except IndexError:
         return jsonify({"error": "Post not found"}), 404
 
-    if session["email"] in post["upvoters"]:
-        data.remove_post_upvoter(post_id, session["email"])
+    if email in post["upvoters"]:
+        data.remove_post_upvoter(post_id, email)
     else:
-        data.add_post_upvoter(post_id, session["email"])
+        data.add_post_upvoter(post_id, email)
 
     post = data.get_post_data(post_id)
     post = add_display_author(post)
     return jsonify({"post": post})
 
 def add_display_author(post):
-    if post["is_anonymous"] == "yes":
-        post["display_author"] = "Anonymous"
+    email = session['user']['email']
+    if post['is_anonymous'] == 'yes':
+        post['display_author'] = 'Anonymous'
     else:
-        post["display_author"] = data.get_user_name(post["author_email"])
-    post["has_upvoted"] = 'email' in session and session["email"] in post["upvoters"]
+        post['display_author'] = data.get_user_name(post['author_email'])
+    post['has_upvoted'] = 'user' in session and email in post['upvoters']
     return post
 
 #join/create class:
 @app.route("/join_class", methods=["POST"])
+@login_req
 def join_a_class():
+    email = session['user']['email']
     code = request.form.get("class_code")
     if code not in data.get_all_classes():
         flash("Class not found. Ask your teacher for the code.")
         return redirect(url_for("home"))
-    data.add_class_member(code, session['email'])
+    data.add_class_member(code, email)
     return redirect(url_for("home"))
 
 @app.route("/create_class_",methods=["POST"])
+@login_req
 def create_a_class():
+    email = session['user']['email']
     class_name = request.form.get("class_name")
-    class_created = data.create_class(session['email'], class_name)
+    class_created = data.create_class(email, class_name)
     return redirect(url_for("home"))
 
 
 if __name__ == "__main__":
-  app.debug = True
+  #app.debug = True
   app.run()

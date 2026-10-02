@@ -30,8 +30,8 @@
     background: var(--bg);
     color: var(--text);
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    /* height: 100vh; */
+    /* overflow: hidden; */
     font-size: 14px;
   }
 
@@ -292,6 +292,29 @@
     margin-top:10px;
 }
 
+.edit-notifs, .remove-class{
+    display: flex;
+    cursor: pointer;
+    padding: 3px;
+
+}
+
+.edit-notifs{
+    border: 1px solid blue;
+    background-color: lightblue;
+}
+
+.remove-class{
+    border: 1px solid red;
+    background-color: lightpink;
+}
+
+.edit-notifs:hover, .remove-class:hover {
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: box-shadow ease 0.3s;
+}
+
 </style>
 </head>
 <body>
@@ -370,8 +393,44 @@
                 <h3 style="font-weight: bold;">Cybersecurity</h2>
                 <h4 style="margin-top:3px; font-weight:normal;"><i>Earned June 2026</i></h3>
                 <h4 style="margin-top:3px; font-weight:normal;">Join Cybersecurity</h3>
+                <!-- put id using class-name-button later and function will look for whether button is displayed or not -->
                 <div style="background:lightgreen; border: 1px solid green; margin-top:3px; font-weight:normal; padding:1px; padding-bottom:2px;">Display</div> 
             </div>
+
+            <div style="text-align:center; flex:0 0 auto;">
+                <img src="cybersecurity.png" alt="" class="badges">
+                <h3 style="font-weight: bold;">Cybersecurity</h2>
+                <h4 style="margin-top:3px; font-weight:normal;"><i>Earned June 2026</i></h3>
+                <h4 style="margin-top:3px; font-weight:normal;">Join Cybersecurity</h3>
+                <div style="background:lightgreen; border: 1px solid green; margin-top:3px; font-weight:normal; padding:1px; padding-bottom:2px;">Display</div> 
+            </div>
+
+            <div style="text-align:center; flex:0 0 auto;">
+                <img src="cybersecurity.png" alt="" class="badges">
+                <h3 style="font-weight: bold;">Cybersecurity</h2>
+                <h4 style="margin-top:3px; font-weight:normal;"><i>Earned June 2026</i></h3>
+                <h4 style="margin-top:3px; font-weight:normal;">Join Cybersecurity</h3>
+                <div style="background:lightgreen; border: 1px solid green; margin-top:3px; font-weight:normal; padding:1px; padding-bottom:2px;">Display</div> 
+            </div>
+
+            <div style="text-align:center; flex:0 0 auto;">
+                <img src="cybersecurity.png" alt="" class="badges">
+                <h3 style="font-weight: bold;">Cybersecurity</h2>
+                <h4 style="margin-top:3px; font-weight:normal;"><i>Earned June 2026</i></h3>
+                <h4 style="margin-top:3px; font-weight:normal;">Join Cybersecurity</h3>
+                <div style="background:lightgreen; border: 1px solid green; margin-top:3px; font-weight:normal; padding:1px; padding-bottom:2px;">Display</div> 
+            </div>
+
+
+
+            <div style="text-align:center; flex:0 0 auto;">
+                <img src="cybersecurity.png" alt="" class="badges">
+                <h3 style="font-weight: bold;">Cybersecurity</h2>
+                <h4 style="margin-top:3px; font-weight:normal;"><i>Earned June 2026</i></h3>
+                <h4 style="margin-top:3px; font-weight:normal;">Join Cybersecurity</h3>
+                <div style="background:lightgreen; border: 1px solid green; margin-top:3px; font-weight:normal; padding:1px; padding-bottom:2px;">Display</div> 
+            </div>
+
         </div>
 
     </div>
@@ -381,8 +440,41 @@
     <!-- Remove Classes & Email notifications -->
     <div style="padding: 3%; text-align: left;">
         <h1>Classes & Notifications</h1>
-        <div style="border:1px solid black;">
-            <h2>Sofdev</h2>
+        <div style="border:1px solid black; margin:10px;">
+            <div style="border:1px solid black; padding: 5px; display:flex; justify-content:space-between; align-items: center;">
+                <h2>Sofdev</h2>
+                <div class="remove-class">Remove Class</div>
+            </div>
+            <div style="border: 1px solid black; display: flex; justify-content: space-between; padding: 5px; align-items: center;">
+                <!-- put options here -->
+                <h3>Daily Digest</h3>
+                <!-- link this button into database -->
+                <div class="edit-notifs">Edit Notifications</div>
+            </div>
+        </div>
+        <div style="border:1px solid black; margin:10px;">
+            <div style="border:1px solid black; padding: 5px; display:flex; justify-content:space-between; align-items: center;">
+                <h2>Sofdev</h2>
+                <div class="remove-class">Remove Class</div>
+            </div>
+            <div style="border: 1px solid black; display: flex; justify-content: space-between; padding: 5px; align-items: center;">
+                <!-- put options here -->
+                <h3>Daily Digest</h3>
+                <!-- link this button into database -->
+                <div class="edit-notifs">Edit Notifications</div>
+            </div>
+        </div>
+        <div style="border:1px solid black; margin:10px;">
+            <div style="border:1px solid black; padding: 5px; display:flex; justify-content:space-between; align-items: center;">
+                <h2>Sofdev</h2>
+                <div class="remove-class">Remove Class</div>
+            </div>
+            <div style="border: 1px solid black; display: flex; justify-content: space-between; padding: 5px; align-items: center;">
+                <!-- put options here -->
+                <h3>Daily Digest</h3>
+                <!-- link this button into database -->
+                <div class="edit-notifs">Edit Notifications</div>
+            </div>
         </div>
     </div>
 
@@ -406,6 +498,7 @@ document.getElementById('imageUpload').addEventListener('change',function(){
         reader.readAsDataURL(file);
 });
 
+// idk what this is doing 
 document.getElementById('submitBtn').addEventListener('click', () => {
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');

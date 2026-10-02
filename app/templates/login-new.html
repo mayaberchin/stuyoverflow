@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StuyOverflow</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Script font for the logo -->
+<link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background-color: #cfe0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo {
+    font-family: 'Pacifico', cursive;
+    font-size: 4.5rem;
+    color: #3d3d3d;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .login-btn {
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 2px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    color: #212529;
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .login-btn:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    color: #212529;
+  }
+
+  .login-btn a.stuy-link {
+    color: #0d6efd;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<div class="container text-center">
+  <div class="logo">StuyOverflow</div>
+  <a href="{{ url_for('login') }}" class="login-btn d-inline-block text-decoration-none">
+    Login || Sign Up <span class="stuy-link">(stuy.edu)</span>
+  </a>
+</div>
+
+</body>
+</html>

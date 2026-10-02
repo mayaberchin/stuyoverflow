@@ -9,6 +9,10 @@ Stuy Overflow is a StuyCS tailored discussion platform inspired by Piazza (and S
 It provides a centralized space for communication, academic support, and easier access to resources within the StuyCS community.
 Users will be able to create and repond to questions and share resources; teachers will be able to create assignments and announcements as well as respond to student questions.
 
+Site in progress
+### Docs & Notes: https://docs.google.com/document/d/1-NpPsIkAHrMVE2ni6zFmI4NpfTL4l_RKbKN2JGg1JVE/edit?usp=sharing
+### UI/UX design: https://docs.google.com/presentation/d/1hZf04qUofqqFX5IPAJsZaI8br2Uyc9omJNrIlynJduQ/edit?usp=sharing
+
 ### Live Site: https://brunes.me/  
 
 ---
