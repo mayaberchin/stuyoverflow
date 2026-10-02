@@ -167,24 +167,6 @@ def home():
 @app.route('/skills', methods=['GET', 'POST'])
 @login_req
 def skills():
-    # OLD IMPLEMENTATION (OBSOLETE)
-    '''
-    skills = ['common sense','reading comp','hw','timeliness','participation','comms','hardware','terminal','racket','prefix notation',
-              'logic','conditionals','variables','functions','return types','recursion','loops','comments','turtles','patches','shapes','programs','interface','webpage']
-    entries = [['overall',3.57,3.14,3.00,2.57,3.29,4.00,3.00,3.20,3.00,4.00,3.86,3.40,'-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['10-19-26m',4,3,4,3,4,4,'-','-',4,'-',4,4,'-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['10-12-26m',4,3,2,1,4,4,'-',4,4,'-',4,4,'-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['10-05-26m',4,2,1,0,3,4,'-',4,3,'-',4,4,'-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['09-28-26m',4,4,3,3,4,4,'-',3,3,'-',4,3,'-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['09-21-26m',3,4,4,3,4,4,4,3,2,4,4,2,'-','-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['09-14-26m',3,3,3,4,2,4,4,2,2,4,4,'-','-','-','-','-','-','-','-','-','-','-','-','-'],
-              ['09-07-26m',3,3,4,4,2,4,1,'-','-','-',3,'-','-','-','-','-','-','-','-','-','-','-','-','-']]
-    email = session['user']['email']
-    is_stuy = email[-8:] == 'stuy.edu'
-    is_whitelisted = email in WHITELIST
-    return render_template('skills.html', name=session['user']['name'], email=email, is_stuy=str(is_stuy), is_whitelisted=str(is_whitelisted), skills=skills, entries=entries)
-    #return render_template('skills.html', name='Maya', email='mayaberchin@gmail.com', is_stuy='False', is_whitelisted='True',  skills=skills, entries=entries)
-    '''
     # CURRENT TEMPORARY IMPLEMENTATION--SHOWCASE BAREBONES CSV
     content=''
     with open('./static/skills.csv', 'r', encoding='UTF-8') as f:
