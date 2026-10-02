@@ -49,9 +49,11 @@ input,select,textarea{font-family:inherit}
 .sub-tab{background:#9c8fd6;opacity:.55;font-weight:600}
 .sub-tab:hover{opacity:.9}.sub-tab.active{opacity:1}
 .divider{width:1px;height:28px;background:var(--line);margin:0 4px}
-.view-toggle{margin-left:auto;display:flex;gap:4px;background:#e4eaf3;padding:4px;border-radius:20px}
-.view-toggle button{border:none;background:transparent;padding:8px 16px;border-radius:16px;font-size:13px;font-weight:600;color:#4a5a6a}
-.view-toggle button.active{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.view-toggle{margin-left:auto;position:relative;display:grid;grid-template-columns:1fr 1fr;background:#e4eaf3;padding:4px;border-radius:20px}
+.view-toggle::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:16px;box-shadow:var(--shadow);transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.view-toggle.teacher::before{transform:translateX(100%)}
+.view-toggle button{position:relative;z-index:1;border:none;background:transparent;padding:8px 18px;border-radius:16px;font-size:13px;font-weight:600;color:#4a5a6a;white-space:nowrap;transition:color .55s ease}
+.view-toggle button.active{color:var(--ink)}
 
 .stats{font-size:20px;margin:4px 0 18px}
 .stats b{font-weight:600}.stats i{color:#b5bcc8;font-style:normal;margin:0 10px}
@@ -249,6 +251,7 @@ $("catTabs").onclick = e=>{
 };
 function setView(v){
   view=v;
+  document.querySelector(".view-toggle").classList.toggle("teacher",v==="teacher");
   $("studentBtn").classList.toggle("active",v==="student");
   $("teacherBtn").classList.toggle("active",v==="teacher");
   $("studentView").style.display = v==="student"?"block":"none";
