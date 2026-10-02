@@ -43,7 +43,7 @@ data.create_tables()
 
 ALLOWED_UPLOADS = {"png", "jpg", "jpeg", "gif", "pdf", "txt", "doc", "docx"}
 
-WHITELIST = ['tm@stuycs.org', 'mayaberchin@gmail.com', 'MeganKwok168@gmail.com']
+WHITELIST = ['tm@stuycs.org', 'mayaberchin@gmail.com', 'megankwok168@gmail.com']
 
 POST_PAGE_INFO = {
     "announcements": {
@@ -94,6 +94,7 @@ def authorized():
     try:
         token = google.authorize_access_token()
         user_info = google.get('userinfo').json()
+        user_info['email'] = user_info['email'].lower()     # in case users entered their email with uppercase letters
         session['user'] = user_info
         email = session['user']['email']
         if not data.user_exists(email):
