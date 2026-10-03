@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StuyOverflow</title>
+<style>
+:root{
+  --nav:#2f2f2f; --bg:#f3f5fa; --rail:#3f78bd; --ink:#232733; --muted:#6b7280; --line:#dfe5ee;
+  --red:#ef3b34; --blue:#4a86c8; --green:#2e7d5b;
+  --graphics:#8b27c4; --cyber:#173a5e; --ethics:#ef1fb0; --softdev:#f7941d;
+  --shadow:0 1px 3px rgba(20,30,60,.10),0 4px 14px rgba(20,30,60,.06);
+  --shadow-hover:0 10px 28px rgba(20,30,60,.20),0 3px 8px rgba(20,30,60,.10);
+}
+*{box-sizing:border-box}
+html,body{height:100%;width:100%;margin:0}
+body{font-family:Calibri,Carlito,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* top nav */
+.topnav{height:58px;background:var(--nav);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:5}
+.logo{font-family:"Brush Script MT","Segoe Script",cursive;font-size:28px;color:#fff}
+.navlinks{display:flex;gap:34px;color:#d6d6d6;font-size:15px}
+.navlinks a{position:relative;height:58px;display:flex;align-items:center;padding:0 2px}
+.navlinks a:hover{color:#fff}
+.navlinks a.active{color:#fff;font-weight:600}
+.navlinks a.active::after{content:"";position:absolute;left:50%;bottom:14px;width:100%;height:2px;background:#fff;transform:translateX(-50%)}
+.navright{display:flex;align-items:center;gap:12px;justify-self:end}
+.btn{border:none;color:#fff;padding:9px 18px;border-radius:6px;font-weight:600;font-size:14px;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn-ask{background:var(--red)}
+.btn-join{background:var(--blue)}
+.btn{white-space:nowrap;flex-shrink:0;line-height:1.2;align-self:center}
+.navright{flex-shrink:0}
+.logo{flex-shrink:0;justify-self:start;text-align:left;padding:0}
+.avatar{width:34px;height:34px;border-radius:50%;background:#fff}
+
+/* layout */
+.shell{flex:1;display:flex;min-height:0}
+.rail{width:68px;background:var(--rail);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0;position:relative;transition:width .22s ease;z-index:3}
+.rail .filter{color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:1.25;margin-bottom:8px;text-decoration:underline}
+.rail a{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;transition:background .15s}
+.rail a:hover{background:rgba(255,255,255,.2)}
+.rail a.on{background:rgba(255,255,255,.28)}
+.rail .saved{margin-top:auto}
+/* SVG slot: drop your <svg> inside .ico (sized 24x24, uses currentColor). Dashed outline is just a placeholder. */
+.rail .ico{width:24px;height:24px;display:block;border-radius:6px}
+.rail .ico:empty{border:1.5px dashed rgba(255,255,255,.55)}
+.rail .ico svg{width:100%;height:100%;display:block;fill:currentColor}
+.rail .txt{display:none}
+.shell.expanded .rail{width:216px;align-items:stretch;padding:14px 14px}
+.shell.expanded .rail .filter{text-align:left;padding-left:6px}
+.shell.expanded .rail a{width:auto;justify-content:flex-start;padding:0 16px}
+.shell.expanded .rail .ico{display:none}
+.shell.expanded .rail .txt{display:inline}
+.rail-toggle{position:absolute;top:50%;right:-14px;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;color:#5b6577;box-shadow:0 2px 8px rgba(20,30,60,.22);display:grid;place-items:center;padding:0;transition:box-shadow .3s ease,color .3s ease}
+.rail-toggle:hover{color:var(--rail);box-shadow:0 4px 14px rgba(20,30,60,.3)}
+.rail-toggle::before{content:"";width:7px;height:7px;border-top:2px solid currentColor;border-right:2px solid currentColor;border-radius:1px;transform:translateX(-1px) rotate(45deg);transition:transform .3s ease}
+.shell.expanded .rail-toggle::before{transform:translateX(1px) rotate(-135deg)}
+main{flex:1;overflow-y:auto;padding:26px 36px 56px;min-width:0}
+.panel-open main{padding-right:20px}
+
+/* sections */
+.sec{margin-bottom:14px}
+.sec-head{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-weight:600;font-size:14px;user-select:none}
+.sec-head .chev{width:14px;color:var(--muted);transition:transform .2s}
+.sec.open .chev{transform:rotate(90deg)}
+.sec-tools{display:none;align-items:center;gap:12px;margin:14px 0}
+.sec.open .sec-tools{display:flex}
+.search{flex:1;padding:11px 16px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fff;box-shadow:var(--shadow)}
+.view-toggle{display:flex;gap:4px}
+.view-toggle button{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:18px}
+.view-toggle button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.sec-body{display:none}
+.sec.open .sec-body{display:block}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.chip{border:none;padding:9px 26px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.3px;background:#e6eaf1;color:#9aa3b2;transition:all .15s}
+.chip[data-c="all"].on{background:#111;color:#fff}
+.chip:hover,.chip.on{color:#fff;background:var(--c,#111);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:26px}
+.grid.list{grid-template-columns:1fr}
+.card{background:#fff;border-radius:16px;padding:16px 22px;box-shadow:var(--shadow);cursor:pointer;position:relative;top:0;transition:top .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;gap:9px;border:none;text-align:left}
+.card:hover{top:-2px;box-shadow:var(--shadow-hover)}
+.card .top{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:#444}
+.tag{color:#fff;font-size:12px;font-weight:700;letter-spacing:.3px;padding:4px 12px;border-radius:5px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-left:4px}
+.card h4{margin:2px 0 0;font-size:19px}
+.card .by{font-size:12.5px;color:var(--muted)}
+.card p{margin:0;font-size:14.5px;line-height:1.55;color:#444}
+.card .lbl{font-size:11.5px;font-weight:700;margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{background:#eef1f6;border-radius:7px;padding:5px 12px;font-size:13px}
+.card .foot{display:flex;align-items:center;gap:8px;margin-top:auto;font-size:12px;color:var(--green);font-weight:600}
+.card .ico{width:26px;height:26px;flex-shrink:0;display:block;color:var(--ink);border-radius:6px}
+.card .ico:empty{border:1.5px dashed #b8c0cc}
+.card .ico svg{width:100%;height:100%;display:block;fill:currentColor}
+
+/* detail panel */
+.detail{width:0;overflow:hidden;background:#fff;box-shadow:-6px 0 24px rgba(20,30,60,.12);transition:width .25s ease;flex-shrink:0}
+.panel-open .detail{width:min(46vw,560px)}
+.detail-in{width:min(46vw,560px);height:100%;overflow-y:auto;padding:16px 22px 28px}
+.detail-bar{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:14px}
+.xbtn{border:none;background:transparent;width:30px;height:30px;border-radius:8px;font-size:16px;color:#555}
+.xbtn:hover{background:#e5e7eb}
+.detail h2{margin:10px 0 6px;font-size:21px}
+.endorse{font-size:12px;color:var(--green);font-weight:600;margin:8px 0}
+.detail .body{font-size:14px;line-height:1.55;color:#333}
+.upv{border:1px solid var(--graphics);color:var(--graphics);background:#fff;border-radius:8px;padding:3px 12px;font-size:12px;margin:12px 0}
+.detail textarea{width:100%;height:96px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:13px;resize:none}
+.detail h3{font-size:15px;margin:20px 0 8px}
+.postrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:8px}
+.postrow button{background:#e5e7eb;border:none;border-radius:8px;padding:6px 18px;color:#777}
+.reply{border-top:1px solid var(--line);padding:10px 0;font-size:13px}
+
+@media(max-width:1120px){.topnav{display:flex;gap:28px}.navlinks{gap:24px;min-width:0;overflow-x:auto;scrollbar-width:none}.navright{margin-left:auto}}
+@media(max-width:560px){.topnav{padding:0 12px;gap:14px}.navlinks{gap:14px;font-size:14px}.btn{padding:7px 12px}}
+@media(max-width:800px){.panel-open .detail{position:fixed;inset:58px 0 0 64px;width:auto}.detail-in{width:auto}}
+.navlinks.drag{cursor:grab;user-select:none;-webkit-user-select:none}
+.navlinks.fade-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 30px),transparent)}
+.navlinks.fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent)}
+.navlinks.fade-l.fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topnav">
+  <a class="logo" href="{{ url_for('home') }}">StuyOverflow</a>
+  <nav class="navlinks">
+    <a class="active" href="{{ url_for('home') }}">Q&amp;A</a>
+    <a href="{{ url_for('calendar') }}">Calendar</a>
+    <a href="{{ url_for('resources') }}">Resources</a>
+    <a href="{{ url_for('skills') }}">Skills</a>
+  </nav>
+  <div class="navright">
+    <button class="btn btn-ask">Ask Question</button>
+    <button class="btn btn-join">Join Class</button>
+    <div class="avatar" role="img" aria-label="Profile"></div>
+  </div>
+</header>
+
+<div class="shell expanded" id="shell">
+  <nav class="rail" aria-label="Filter post type">
+    <div class="filter">FILTER<br>POST<br>TYPE</div>
+    <a class="on" href="{{ url_for('home') }}" title="All"><span class="ico"><!-- svg: all --></span><span class="txt">All</span></a>
+    <a href="{{ url_for('announcements') }}" title="Announcements"><span class="ico"><!-- svg: announcements --></span><span class="txt">Announcements</span></a>
+    <a href="{{ url_for('questions') }}" title="Questions"><span class="ico"><!-- svg: questions --></span><span class="txt">Questions</span></a>
+    <a href="{{ url_for('notes_resources') }}" title="Notes"><span class="ico"><!-- svg: notes --></span><span class="txt">Notes</span></a>
+    <a class="saved" href="{{ url_for('saved') }}" title="Saved"><span class="ico"><!-- svg: saved --></span><span class="txt">Saved</span></a>
+    <button class="rail-toggle" id="railToggle" aria-label="Expand or collapse sidebar" aria-expanded="true"></button>
+  </nav>
+
+  <main id="main"></main>
+
+  <aside class="detail" aria-label="Post detail"><div class="detail-in" id="detail"></div></aside>
+</div>
+
+<script>
+const CLS = {graphics:["GRAPHICS","#8b27c4"], cyber:["CYBERSECURITY","#173a5e"], ethics:["ETHICS","#ef1fb0"], softdev:["SOFTDEV","#f7941d"]};
+/* Paste your SVG markup (as a string) for each post type. Empty = dashed placeholder box.
+   q = question, a = announcement, n = note. Use fill="currentColor" so it picks up the card text color. */
+const TYPE_LABEL = {q:"Question", a:"Announcement", n:"Note"};
+const ICONS = {
+  q: ``,  // <svg ...>question</svg>
+  a: ``,  // <svg ...>announcement</svg>
+  n: ``   // <svg ...>note</svg>
+};
+const POSTS = [
+  {c:"graphics", f:5, hot:1, t:"Title title title.", by:"Frist Lsat", tags:["bezier lines","spheres","more tags"], end:"jonalf dyrland-weaver", k:"q"},
+  {c:"cyber", f:0, t:"Title title title.", by:"Frist Lsat", tags:["assignment","grades","major projects"], k:"a"},
+  {c:"ethics", f:3, hot:1, t:"Title title title.", by:"Frist Lsat", tags:["regex project","how-to","hw help"], end:"topher mykolyk", k:"q"},
+  {c:"ethics", f:0, t:"Title title title.", by:"Frist Lsat", tags:["evil corps","protips","more tags"], end:"topher mykolyk", k:"n"},
+  {c:"softdev", f:0, t:"Title title title.", by:"Frist Lsat", tags:["bezier lines","spheres","more tags"], k:"n"},
+  {c:"softdev", f:0, t:"Title title title.", by:"Frist Lsat", tags:["bezier lines","spheres","more tags"], k:"q"},
+  {c:"graphics", f:1, t:"Title title title.", by:"Frist Lsat", tags:["bezier lines","spheres","more tags"], k:"q"},
+  {c:"softdev", f:1, t:"Title title title.", by:"Frist Lsat", tags:["bezier lines","spheres","more tags"], k:"n"}
+];
+const SECTIONS = [
+  {id:"pinned", name:"Pinned", posts:POSTS.slice(0,3), open:false, chip:"all", view:"grid", q:""},
+  {id:"unread", name:"Unread", posts:POSTS.slice(0,4), open:true,  chip:"all", view:"grid", q:""},
+  {id:"newest", name:"Newest", posts:POSTS,            open:false, chip:"all", view:"grid", q:""}
+];
+let selected = null;
+
+const cardHTML = (p, i) => `
+  <button class="card" data-i="${i}">
+    <div class="top"><span class="tag" style="background:${CLS[p.c][1]}">${CLS[p.c][0]}</span>
+      <span>Followups ${p.f}${p.hot?'<i class="dot"></i>':''}</span></div>
+    <h4>${p.t}</h4><div class="by">By ${p.by}</div>
+    <p>First few sentences first few sentences. First few sentences…</p>
+    <div class="lbl">TAGS</div>
+    <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+    <div class="foot"><span class="ico" data-type="${p.k}" title="${TYPE_LABEL[p.k]}">${ICONS[p.k]}</span>${p.end?`Endorsed by instructor (${p.end})`:""}</div>
+  </button>`;
+
+function render(){
+  document.getElementById("main").innerHTML = SECTIONS.map(s=>{
+    const list = s.posts.filter(p=>(s.chip==="all"||p.c===s.chip) &&
+      (p.t+p.tags.join(" ")+CLS[p.c][0]).toLowerCase().includes(s.q.toLowerCase()));
+    return `<section class="sec ${s.open?"open":""}" data-s="${s.id}">
+      <div class="sec-head" tabindex="0" role="button" aria-expanded="${s.open}"><span class="chev">&#9656;</span>${s.name} (${s.posts.length})</div>
+      <div class="sec-tools">
+        <input class="search" placeholder="Search posts…" value="${s.q}" aria-label="Search posts">
+        <div class="view-toggle"><button data-v="list" class="${s.view==="list"?"on":""}" aria-label="List view">&#9776;</button>
+        <button data-v="grid" class="${s.view==="grid"?"on":""}" aria-label="Grid view">&#9638;</button></div>
+      </div>
+      <div class="sec-body">
+        <div class="chips">${[["all","ALL","#111"],...Object.entries(CLS).map(([k,v])=>[k,v[0],v[1]])]
+          .map(([k,l,c])=>`<button class="chip ${s.chip===k?"on":""}" data-c="${k}" style="--c:${c}">${l}</button>`).join("")}</div>
+        <div class="grid ${s.view==="list"?"list":""}">${list.map(p=>cardHTML(p,POSTS.indexOf(p))).join("")||'<p style="color:#6b7280">No posts match.</p>'}</div>
+      </div></section>`;
+  }).join("");
+}
+
+const main = document.getElementById("main");
+main.addEventListener("click", e=>{
+  const sec = e.target.closest(".sec"); if(!sec) return;
+  const s = SECTIONS.find(x=>x.id===sec.dataset.s);
+  if(e.target.closest(".sec-head")){ s.open=!s.open; render(); }
+  else if(e.target.closest(".chip")){ s.chip=e.target.closest(".chip").dataset.c; render(); }
+  else if(e.target.closest("[data-v]")){ s.view=e.target.closest("[data-v]").dataset.v; render(); }
+  else if(e.target.closest(".card")){ openPost(+e.target.closest(".card").dataset.i); }
+});
+main.addEventListener("input", e=>{
+  if(!e.target.classList.contains("search")) return;
+  const s = SECTIONS.find(x=>x.id===e.target.closest(".sec").dataset.s);
+  const pos = e.target.selectionStart; s.q = e.target.value; render();
+  const el = document.querySelector(`[data-s="${s.id}"] .search`); el.focus(); el.setSelectionRange(pos,pos);
+});
+
+const shell = document.getElementById("shell"), railBtn = document.getElementById("railToggle");
+let railWas = true;
+function setRail(on){ shell.classList.toggle("expanded", on); railBtn.setAttribute("aria-expanded", on); }
+railBtn.onclick = ()=> setRail(!shell.classList.contains("expanded"));
+
+function openPost(i){
+  const p = POSTS[i]; selected = i;
+  if(!shell.classList.contains("panel-open")) railWas = shell.classList.contains("expanded");
+  setRail(false);
+  shell.classList.add("panel-open");
+  document.getElementById("detail").innerHTML = `
+    <div class="detail-bar"><span>${CLS[p.c][0].toLowerCase()} post</span><button class="xbtn" id="closeBtn" aria-label="Close">&#10005;</button></div>
+    <span class="tag" style="background:${CLS[p.c][1]}">${CLS[p.c][0]}</span>
+    <h2>${p.t}</h2>
+    <div class="by" style="color:#6b7280;font-size:12px">Updated 5/17/2026 by ${p.by}</div>
+    ${p.end?`<div class="endorse">Endorsed by instructor (${p.end})</div>`:""}
+    <div class="body">Body body body body body body body body body body body body body body body body body body body body body body body body body body.</div>
+    <div class="tags" style="margin-top:12px">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+    <button class="upv">&#9650; 4</button>
+    <h3>Followups</h3>
+    <textarea placeholder="Write a followup…" aria-label="Write a followup"></textarea>
+    <div class="postrow"><label><input type="checkbox"> Post anonymously</label><button>Post</button></div>
+    <h3>Teacher responses</h3>
+    <div class="reply"><div class="by">By teacher</div>hi<div style="margin-top:8px"><button class="upv" style="margin:0">&#9650; 1</button></div></div>`;
+  document.getElementById("closeBtn").onclick = closePost;
+}
+function closePost(){ shell.classList.remove("panel-open"); setRail(railWas); selected=null; }
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closePost(); });
+render();
+
+/* ---- top nav: drag to scroll + hover edges to scroll (only matters when the tabs overflow) ---- */
+(function(){
+  const nav=document.querySelector(".navlinks"); if(!nav) return;
+  nav.classList.add("drag");
+  let down=false, moved=false, startX=0, startLeft=0, vel=0, raf=0;
+  function fades(){
+    const max=nav.scrollWidth-nav.clientWidth;
+    nav.classList.toggle("fade-l", max>1 && nav.scrollLeft>2);
+    nav.classList.toggle("fade-r", max>1 && nav.scrollLeft<max-2);
+  }
+  function tick(){
+    if(vel && !down){ const b=nav.scrollLeft; nav.scrollLeft+=vel; raf = nav.scrollLeft!==b ? requestAnimationFrame(tick) : 0; }
+    else raf=0;
+  }
+  nav.addEventListener("dragstart", e=>e.preventDefault());
+  nav.addEventListener("pointerdown", e=>{
+    if(e.pointerType!=="mouse" || e.button!==0) return;
+    down=true; moved=false; startX=e.clientX; startLeft=nav.scrollLeft;
+  });
+  window.addEventListener("pointermove", e=>{
+    if(!down) return;
+    const dx=e.clientX-startX;
+    if(Math.abs(dx)>4){ moved=true; nav.style.cursor="grabbing"; }
+    nav.scrollLeft=startLeft-dx;
+  });
+  window.addEventListener("pointerup", ()=>{ down=false; nav.style.cursor=""; });
+  nav.addEventListener("click", e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); moved=false; } }, true);
+  nav.addEventListener("pointermove", e=>{
+    if(e.pointerType!=="mouse" || down) return;
+    if(nav.scrollWidth<=nav.clientWidth){ vel=0; return; }
+    const r=nav.getBoundingClientRect(), z=Math.min(90, r.width*.3), x=e.clientX-r.left;
+    vel = x>r.width-z ? 1+((x-(r.width-z))/z)*7 : x<z ? -(1+((z-x)/z)*7) : 0;
+    if(vel && !raf) raf=requestAnimationFrame(tick);
+  });
+  nav.addEventListener("pointerleave", ()=>{ vel=0; });
+  nav.addEventListener("scroll", fades, {passive:true});
+  window.addEventListener("resize", fades);
+  new MutationObserver(fades).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
+  fades();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StuyOverflow — Skills</title>
+<style>
+:root{
+  --nav:#2f2f2f; --bg:#f3f5fa; --ink:#232733; --muted:#6b7280; --line:#dfe5ee;
+  --red:#ef3b34; --blue:#4a86c8;
+  --graphics:#8b27c4; --cyber:#173a5e; --ethics:#ef1fb0;
+  --cat:var(--graphics);
+  --shadow:0 1px 3px rgba(20,30,60,.10),0 4px 14px rgba(20,30,60,.06);
+  --shadow-hover:0 12px 28px rgba(20,30,60,.20),0 3px 8px rgba(20,30,60,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;width:100%}
+body{min-height:100vh;display:flex;flex-direction:column;font-family:Calibri,Carlito,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.topnav{height:58px;background:var(--nav);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;box-shadow:0 2px 8px rgba(0,0,0,.25);position:sticky;top:0;z-index:5}
+.logo{font-family:"Brush Script MT","Segoe Script",cursive;font-size:28px;color:#fff;cursor:pointer;background:none;border:none}
+.navlinks{display:flex;gap:22px;color:#d6d6d6;font-size:15px}
+.navlinks{gap:34px}
+.navlinks a{position:relative;height:58px;display:flex;align-items:center;padding:0 2px}
+.navlinks .active{color:#fff;font-weight:600}
+.navlinks .active::after{content:"";position:absolute;left:50%;bottom:14px;width:100%;height:2px;background:#fff;transform:translateX(-50%)}
+.navlinks .myclasses{display:none}.navlinks .myclasses.show{display:flex}
+.navright{display:flex;align-items:center;gap:12px;justify-self:end}
+.btn{border:none;color:#fff;padding:9px 18px;border-radius:6px;font-weight:600;font-size:14px;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn-ask{background:var(--red)}
+.btn-join{background:var(--blue)}
+.btn{white-space:nowrap;flex-shrink:0;line-height:1.2;align-self:center}
+.navright{flex-shrink:0}
+.logo{flex-shrink:0;justify-self:start;text-align:left;padding:0}
+.avatar{width:34px;height:34px;border-radius:50%;background:#fff}
+
+.page{flex:1;width:100%;padding:26px 40px 56px}
+.head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.tabs{display:flex;gap:10px}
+.cat-tab,.sub-tab{border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:.3px;color:#fff;opacity:.5;transition:all .15s}
+.cat-tab.graphics{background:var(--graphics)}.cat-tab.cyber{background:var(--cyber)}.cat-tab.ethics{background:var(--ethics)}
+.cat-tab:hover{opacity:.85;transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.cat-tab.active{opacity:1;box-shadow:var(--shadow)}
+.sub-tab{background:#9c8fd6;opacity:.55;font-weight:600}
+.sub-tab:hover{opacity:.9}.sub-tab.active{opacity:1}
+.divider{width:1px;height:28px;background:var(--line);margin:0 4px}
+.view-toggle{margin-left:auto;position:relative;display:grid;grid-template-columns:1fr 1fr;background:#e4eaf3;padding:4px;border-radius:20px}
+.view-toggle::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:16px;box-shadow:var(--shadow);transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.view-toggle.teacher::before{transform:translateX(100%)}
+.view-toggle button{position:relative;z-index:1;border:none;background:transparent;padding:8px 18px;border-radius:16px;font-size:13px;font-weight:600;color:#4a5a6a;white-space:nowrap;transition:color .55s ease}
+.view-toggle button.active{color:var(--ink)}
+
+.stats{font-size:20px;margin:4px 0 18px}
+.stats b{font-weight:600}.stats i{color:#b5bcc8;font-style:normal;margin:0 10px}
+
+/* skill accordion */
+.skill{margin-bottom:6px;border-top:1px solid var(--line);padding-top:4px}
+.skill-row{display:flex;align-items:center;gap:12px;padding:12px 4px 8px;cursor:pointer;user-select:none}
+.handle{color:#9aa7b3;font-size:18px;cursor:grab}
+.name{font-weight:700;font-size:14.5px}
+.name span{font-weight:400;color:#444;margin-left:4px}
+.chev{margin-left:auto;color:#555;font-size:14px;transition:transform .2s}
+.skill.open .chev{transform:rotate(180deg)}
+.segs,.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.seg{height:9px;border-radius:5px;background:#dfe4ec;overflow:hidden}
+.seg i{display:block;height:100%;background:var(--cat);border-radius:5px}
+.cards{display:none;padding:14px 0 20px}
+.skill.open .cards{display:grid}
+.skill:not(.open) .segs{margin-bottom:12px}
+.skill.open .segs{margin-bottom:0}
+
+.rubric{background:#fff;border-radius:14px;padding:14px 16px;font-size:12.5px;line-height:1.45;color:#555;text-align:center;box-shadow:var(--shadow);position:relative;top:0;transition:top .3s ease,box-shadow .3s ease;cursor:default}
+.rubric:hover{top:-2px;box-shadow:var(--shadow-hover)}
+.rubric .num{font-weight:700;color:var(--ink);margin-bottom:6px}
+
+/* teacher: overview */
+.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.ocard{background:#fff;border-radius:14px;padding:18px;box-shadow:var(--shadow);position:relative;top:0;transition:top .3s ease,box-shadow .3s ease}
+.ocard:hover{top:-2px;box-shadow:var(--shadow-hover)}
+.hist{height:170px;display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid #bbb;border-left:1px solid #bbb;padding:0 4px}
+.hist div{flex:1;background:var(--cat);border-radius:4px 4px 0 0;opacity:.85;transition:opacity .15s}
+.hist div:hover{opacity:1}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:#777;margin:4px 0 10px}
+.range{display:flex;justify-content:center;gap:8px;align-items:center;font-size:12px}
+.range select{padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.arrow{background:none;border:none;color:#666;font-weight:700}
+.metric{text-align:center;font-weight:700;font-size:15px;margin:10px 0}
+.rank{font-size:12.5px;padding:2px 0}.rank i{color:#555}
+.dots{color:#999}
+.full{margin-top:8px;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:14px;padding:5px 14px;font-size:12px}
+.full:hover{background:var(--blue);color:#fff}
+
+/* teacher: students */
+.students{display:flex;gap:24px;align-items:flex-start}
+.list-col{width:230px;flex-shrink:0}
+.search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;margin-bottom:10px;background:#fff;box-shadow:var(--shadow)}
+.slist{background:#fff;border-radius:14px;box-shadow:var(--shadow);max-height:560px;overflow-y:auto;padding:6px}
+.sitem{display:block;width:100%;text-align:left;border:none;background:transparent;padding:10px 12px;border-radius:8px;font-size:13px;transition:background .12s}
+.sitem:hover{background:#eef2f8}.sitem.sel{background:#e4ecf8;font-weight:700}
+.detail{flex:1;min-width:0}
+
+@media(max-width:900px){.overview{grid-template-columns:1fr}.students{flex-direction:column}.list-col{width:100%}.segs,.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1120px){.topnav{display:flex;gap:28px}.navlinks{gap:24px;min-width:0;overflow-x:auto;scrollbar-width:none}.navright{margin-left:auto}}
+@media(max-width:560px){.topnav{padding:0 12px;gap:14px}.navlinks{gap:14px;font-size:14px}.btn{padding:7px 12px}}
+.navlinks.drag{cursor:grab;user-select:none;-webkit-user-select:none}
+.navlinks.fade-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 30px),transparent)}
+.navlinks.fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent)}
+.navlinks.fade-l.fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topnav">
+  <a class="logo" href="{{ url_for('home') }}">StuyOverflow</a>
+  <nav class="navlinks">
+    <a href="{{ url_for('home') }}">Q&amp;A</a>
+    <a href="{{ url_for('calendar') }}">Calendar</a>
+    <a href="{{ url_for('resources') }}">Resources</a>
+    <a class="active" href="{{ url_for('skills') }}">Skills</a>
+  </nav>
+</header>
+
+<div class="page">
+  <div class="head">
+    <div class="tabs" id="catTabs">
+      <button class="cat-tab graphics active" data-cat="graphics">GRAPHICS</button>
+      <button class="cat-tab cyber" data-cat="cyber">CYBERSECURITY</button>
+      <button class="cat-tab ethics" data-cat="ethics">ETHICS</button>
+    </div>
+    <div class="tabs" id="subTabs" style="display:none">
+      <span class="divider"></span>
+      <button class="sub-tab active" data-sub="overview">Class Overview</button>
+      <button class="sub-tab" data-sub="students">Students</button>
+    </div>
+    <div class="view-toggle">
+      <button id="studentBtn" class="active">Student view</button>
+      <button id="teacherBtn">Teacher view</button>
+    </div>
+  </div>
+
+  <div id="studentView">
+    <div class="stats"><b>Questions: 23</b><i>|</i><b>Notes: 30</b><i>|</i><b>Followups: 50</b></div>
+    <div id="skillsList"></div>
+  </div>
+
+  <div id="teacherView" style="display:none">
+    <div id="overviewPane"></div>
+    <div id="studentsPane" style="display:none">
+      <div class="students">
+        <div class="list-col">
+          <input class="search" id="studentSearch" placeholder="Search" aria-label="Search students">
+          <div class="slist" id="studentList"></div>
+        </div>
+        <div class="detail"><div id="teacherSkills"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = {graphics:"var(--graphics)", cyber:"var(--cyber)", ethics:"var(--ethics)"};
+const SKILLS = [
+  {name:"Using lines",   score:3.75, open:true},
+  {name:"Using spheres", score:3.0,  open:false},
+  {name:"Using cones",   score:3.0,  open:false},
+  {name:"Using cubes",   score:3.75, open:true}
+];
+const STUDENTS = ["Class Average", ...Array.from({length:20}, ()=>"Frist Lsat")];
+const RUBRIC = "Student can use lines in their blaskdjfa;lksjd;lkjbjvjkhkjbjvlkjblkjbalkjsdo;faneinlfkjasnd.";
+
+let cat="graphics", view="student", sub="overview", selStudent=0, full=false;
+const open = {}; SKILLS.forEach(s=>open[s.name]=s.open);
+const $ = id => document.getElementById(id);
+
+function skillsHTML(handleRight){
+  return SKILLS.map(s=>{
+    const o = open[s.name];
+    const segs = [0,1,2,3].map(i=>`<div class="seg"><i style="width:${Math.max(0,Math.min(1,s.score-i))*100}%"></i></div>`).join("");
+    const cards = [1,2,3,4].map(n=>`<div class="rubric"><div class="num">${n}</div>${RUBRIC}</div>`).join("");
+    return `<div class="skill ${o?"open":""}" data-skill="${s.name}">
+      <div class="skill-row" role="button" tabindex="0" aria-expanded="${o}">
+        ${handleRight?"":'<span class="handle">&#9776;</span>'}
+        <span class="name">${s.name}:<span>${s.score.toFixed(2).replace(/0$/,"")}/4</span></span>
+        <span class="chev">&#8964;</span>
+        ${handleRight?'<span class="handle">&#9776;</span>':""}
+      </div>
+      <div class="segs">${segs}</div>
+      <div class="cards">${cards}</div>
+    </div>`;
+  }).join("");
+}
+
+function bindSkills(el, handleRight){
+  el.querySelectorAll(".skill-row").forEach(r=>{
+    const toggle = ()=>{ const k=r.parentElement.dataset.skill; open[k]=!open[k]; paint(); };
+    r.onclick = toggle;
+    r.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggle(); } };
+  });
+}
+
+function overviewHTML(){
+  const metrics=["Questions","Notes","Followups"];
+  return `<div class="overview">${metrics.map((m,mi)=>{
+    const bars = Array.from({length:24},(_,h)=>`<div style="height:${12+((h*37+mi*53)%70)}%" title="${h}:00"></div>`).join("");
+    const lc = m.toLowerCase();
+    let rows = [30,30,30].map((v,i)=>`<div class="rank">${i+1}. Frist Lsat — <i>${v} ${lc}</i></div>`).join("");
+    if(full) for(let i=4;i<=29;i++) rows += `<div class="rank">${i}. Frist Lsat — <i>${Math.max(1,30-i)} ${lc}</i></div>`;
+    else rows += `<div class="rank dots">…</div>`;
+    rows += [3,2,1].map((v,i)=>`<div class="rank">${30+i}. Frist Lsat — <i>${v} ${lc}</i></div>`).join("");
+    return `<div class="ocard">
+      <div class="hist" role="img" aria-label="${m} by hour">${bars}</div>
+      <div class="axis"><span>00:00</span><span>12:00</span><span>23:59</span></div>
+      <div class="range"><button class="arrow" aria-label="Previous">&lt;</button>
+        <select aria-label="Time range"><option>Today</option><option>Yesterday</option><option>This week</option><option>This month</option><option>This semester</option><option>All time</option></select>
+        <button class="arrow" aria-label="Next">&gt;</button></div>
+      <div class="metric">${m}</div>
+      <div>${rows}</div>
+      <button class="full">${full?"Show less":"Show full list"}</button>
+    </div>`;}).join("")}</div>`;
+}
+
+function studentsHTML(){
+  const q = $("studentSearch").value.toLowerCase();
+  $("studentList").innerHTML = STUDENTS.map((n,i)=>({n,i})).filter(x=>x.n.toLowerCase().includes(q))
+    .map(x=>`<button class="sitem ${x.i===selStudent?"sel":""}" data-i="${x.i}">${x.n}</button>`).join("") || '<div class="sitem">No students found</div>';
+  $("studentList").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{ selStudent=+b.dataset.i; paint(); });
+}
+
+function paint(){
+  document.documentElement.style.setProperty("--cat", CATS[cat]);
+  $("skillsList").innerHTML = skillsHTML(false); bindSkills($("skillsList"));
+  if(view==="teacher"){
+    $("overviewPane").innerHTML = overviewHTML();
+    $("overviewPane").querySelectorAll(".full").forEach(b=>b.onclick=()=>{ full=!full; paint(); });
+    studentsHTML();
+    $("teacherSkills").innerHTML = skillsHTML(true); bindSkills($("teacherSkills"), true);
+  }
+}
+
+$("catTabs").onclick = e=>{
+  const t=e.target.closest(".cat-tab"); if(!t) return;
+  cat=t.dataset.cat;
+  document.querySelectorAll(".cat-tab").forEach(x=>x.classList.toggle("active",x===t));
+  paint();
+};
+function setView(v){
+  view=v;
+  document.querySelector(".view-toggle").classList.toggle("teacher",v==="teacher");
+  $("studentBtn").classList.toggle("active",v==="student");
+  $("teacherBtn").classList.toggle("active",v==="teacher");
+  $("studentView").style.display = v==="student"?"block":"none";
+  $("teacherView").style.display = v==="teacher"?"block":"none";
+  $("subTabs").style.display = v==="teacher"?"flex":"none";
+  paint();
+}
+$("studentBtn").onclick=()=>setView("student");
+$("teacherBtn").onclick=()=>setView("teacher");
+$("subTabs").onclick = e=>{
+  const t=e.target.closest(".sub-tab"); if(!t) return;
+  sub=t.dataset.sub;
+  document.querySelectorAll(".sub-tab").forEach(x=>x.classList.toggle("active",x===t));
+  $("overviewPane").style.display = sub==="overview"?"block":"none";
+  $("studentsPane").style.display = sub==="students"?"block":"none";
+};
+$("studentSearch").oninput = studentsHTML;
+paint();
+
+/* ---- top nav: drag to scroll + hover edges to scroll (only matters when the tabs overflow) ---- */
+(function(){
+  const nav=document.querySelector(".navlinks"); if(!nav) return;
+  nav.classList.add("drag");
+  let down=false, moved=false, startX=0, startLeft=0, vel=0, raf=0;
+  function fades(){
+    const max=nav.scrollWidth-nav.clientWidth;
+    nav.classList.toggle("fade-l", max>1 && nav.scrollLeft>2);
+    nav.classList.toggle("fade-r", max>1 && nav.scrollLeft<max-2);
+  }
+  function tick(){
+    if(vel && !down){ const b=nav.scrollLeft; nav.scrollLeft+=vel; raf = nav.scrollLeft!==b ? requestAnimationFrame(tick) : 0; }
+    else raf=0;
+  }
+  nav.addEventListener("dragstart", e=>e.preventDefault());
+  nav.addEventListener("pointerdown", e=>{
+    if(e.pointerType!=="mouse" || e.button!==0) return;
+    down=true; moved=false; startX=e.clientX; startLeft=nav.scrollLeft;
+  });
+  window.addEventListener("pointermove", e=>{
+    if(!down) return;
+    const dx=e.clientX-startX;
+    if(Math.abs(dx)>4){ moved=true; nav.style.cursor="grabbing"; }
+    nav.scrollLeft=startLeft-dx;
+  });
+  window.addEventListener("pointerup", ()=>{ down=false; nav.style.cursor=""; });
+  nav.addEventListener("click", e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); moved=false; } }, true);
+  nav.addEventListener("pointermove", e=>{
+    if(e.pointerType!=="mouse" || down) return;
+    if(nav.scrollWidth<=nav.clientWidth){ vel=0; return; }
+    const r=nav.getBoundingClientRect(), z=Math.min(90, r.width*.3), x=e.clientX-r.left;
+    vel = x>r.width-z ? 1+((x-(r.width-z))/z)*7 : x<z ? -(1+((z-x)/z)*7) : 0;
+    if(vel && !raf) raf=requestAnimationFrame(tick);
+  });
+  nav.addEventListener("pointerleave", ()=>{ vel=0; });
+  nav.addEventListener("scroll", fades, {passive:true});
+  window.addEventListener("resize", fades);
+  new MutationObserver(fades).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
+  fades();
+})();
+</script>
+</body>
+</html>
