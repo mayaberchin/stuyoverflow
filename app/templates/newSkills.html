@@ -6,6 +6,9 @@
 <title>StuyOverflow — Skills</title>
 <style>
 :root{
+  /* Tab state equation (shared by all pages): a class tab is just its base color (--c) shown at one of three strengths.
+     faded = --tab-fade, hover = --tab-hover, selected = --tab-on. New classes only need a color; text color is picked automatically. */
+  --tab-fade:.3; --tab-hover:.6; --tab-on:1;
   --nav:#2f2f2f; --bg:#f3f5fa; --ink:#232733; --muted:#6b7280; --line:#dfe5ee;
   --red:#ef3b34; --blue:#4a86c8;
   --graphics:#8b27c4; --cyber:#173a5e; --ethics:#ef1fb0;
@@ -42,12 +45,10 @@ input,select,textarea{font-family:inherit}
 .page{flex:1;width:100%;padding:26px 40px 56px}
 .head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
 .tabs{display:flex;gap:10px}
-.cat-tab,.sub-tab{border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:.3px;color:#fff;opacity:.5;transition:all .15s}
-.cat-tab.graphics{background:var(--graphics)}.cat-tab.cyber{background:var(--cyber)}.cat-tab.ethics{background:var(--ethics)}
-.cat-tab:hover{opacity:.85;transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-.cat-tab.active{opacity:1;box-shadow:var(--shadow)}
-.sub-tab{background:#9c8fd6;opacity:.55;font-weight:600}
-.sub-tab:hover{opacity:.9}.sub-tab.active{opacity:1}
+.cat-tab,.sub-tab{position:relative;top:0;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:.3px;background:var(--c,var(--cat));color:var(--ink,var(--cat-ink,#fff));opacity:var(--tab-fade);box-shadow:var(--shadow);transition:opacity .3s ease,top .3s ease,box-shadow .3s ease}
+.cat-tab:hover,.sub-tab:hover{opacity:var(--tab-hover);top:-2px;box-shadow:var(--shadow-hover)}
+.cat-tab.active,.sub-tab.active{opacity:var(--tab-on);box-shadow:var(--shadow-hover)}
+.sub-tab{font-weight:600}
 .divider{width:1px;height:28px;background:var(--line);margin:0 4px}
 .view-toggle{margin-left:auto;position:relative;display:grid;grid-template-columns:1fr 1fr;background:#e4eaf3;padding:4px;border-radius:20px}
 .view-toggle::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:16px;box-shadow:var(--shadow);transition:transform .55s cubic-bezier(.4,0,.2,1)}
@@ -104,7 +105,7 @@ input,select,textarea{font-family:inherit}
 .sitem:hover{background:#eef2f8}.sitem.sel{background:#e4ecf8;font-weight:700}
 .detail{flex:1;min-width:0}
 
-@media(max-width:900px){.overview{grid-template-columns:1fr}.students{flex-direction:column}.list-col{width:100%}.segs,.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.overview{grid-template-columns:1fr}.students{flex-direction:column}.list-col{width:100%}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:1120px){.topnav{display:flex;gap:28px}.navlinks{gap:24px;min-width:0;overflow-x:auto;scrollbar-width:none}.navright{margin-left:auto}}
 @media(max-width:560px){.topnav{padding:0 12px;gap:14px}.navlinks{gap:14px;font-size:14px}.btn{padding:7px 12px}}
 .navlinks.drag{cursor:grab;user-select:none;-webkit-user-select:none}
@@ -112,6 +113,47 @@ input,select,textarea{font-family:inherit}
 .navlinks.fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent)}
 .navlinks.fade-l.fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* profile menu */
+.profile{position:relative;flex-shrink:0}
+.avatar{border:none;padding:0;cursor:pointer;display:grid;place-items:center;font-size:13px;font-weight:700;color:#2f2f2f;overflow:hidden;transition:box-shadow .2s ease}
+.avatar:hover,.avatar[aria-expanded="true"]{box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.menu{position:absolute;right:0;top:calc(100% + 10px);width:250px;background:#fff;color:var(--ink);border-radius:14px;box-shadow:var(--shadow-hover);padding:8px;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s;z-index:30}
+.menu.open{opacity:1;visibility:visible}
+.menu-head{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu-head b{display:block;font-size:15px}
+.menu-head span{font-size:12.5px;color:var(--muted)}
+.menu a{display:block;padding:10px 12px;border-radius:8px;font-size:14px;color:var(--ink)}
+.menu a:hover{background:#eef2f8}
+.menu hr{border:none;border-top:1px solid var(--line);margin:6px 0}
+.menu a.danger{color:#c62828}
+.menu a.danger:hover{background:#fdecec}
+
+/* mobile nav: logo + buttons + avatar on row 1, tabs scroll on row 2 */
+@media(max-width:700px){
+  .topnav{height:auto;flex-wrap:wrap;padding:8px 12px 0;gap:0 10px}
+  .topnav>.logo,.topnav>.navright{height:46px;display:flex;align-items:center}
+  .logo{font-size:25px}
+  .navright{margin-left:auto;gap:8px}
+  .btn{padding:7px 12px;font-size:13px}
+  .navlinks{order:3;flex:1 0 100%;width:100%;gap:22px;font-size:14px}
+  .navlinks a{height:40px}
+  .navlinks a.active::after{bottom:4px}
+}
+
+@media(max-width:700px){
+  .page{padding:18px 14px 44px}
+  .head{gap:10px}
+  .tabs{flex-wrap:wrap;gap:8px}
+  .cat-tab,.sub-tab{padding:9px 14px;font-size:12px}
+  .divider{display:none}
+  .view-toggle{margin-left:0;width:100%}
+  .stats{font-size:16px}.stats i{margin:0 6px}
+  .segs,.cards{gap:8px}
+  .search{font-size:16px}
+}
+@media(max-width:520px){.cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -124,15 +166,27 @@ input,select,textarea{font-family:inherit}
     <a href="{{ url_for('resources') }}">Resources</a>
     <a class="active" href="{{ url_for('skills') }}">Skills</a>
   </nav>
+  <div class="navright">
+    <button class="btn btn-ask">Ask Question</button>
+    <button class="btn btn-join">Join Class</button>
+    <div class="profile" data-name="Frist Lsat" data-email="flast@example.com" data-picture="">
+      <!-- Set data-name, data-email and data-picture on .profile. Initials show by default; if data-picture is set and loads, the picture replaces them. -->
+      <button class="avatar" id="avatarBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileMenu" aria-label="Account menu">FL</button>
+      <div class="menu" id="profileMenu" role="menu" aria-hidden="true">
+        <div class="menu-head"><b>Frist Lsat</b><span>flast@example.com</span></div>
+        <a role="menuitem" href="#">My profile</a>
+        <a role="menuitem" href="#">Account settings</a>
+        <a role="menuitem" href="#">Help &amp; support</a>
+        <hr>
+        <a role="menuitem" class="danger" href="#">Log out</a>
+      </div>
+    </div>
+  </div>
 </header>
 
 <div class="page">
   <div class="head">
-    <div class="tabs" id="catTabs">
-      <button class="cat-tab graphics active" data-cat="graphics">GRAPHICS</button>
-      <button class="cat-tab cyber" data-cat="cyber">CYBERSECURITY</button>
-      <button class="cat-tab ethics" data-cat="ethics">ETHICS</button>
-    </div>
+    <div class="tabs" id="catTabs"></div>
     <div class="tabs" id="subTabs" style="display:none">
       <span class="divider"></span>
       <button class="sub-tab active" data-sub="overview">Class Overview</button>
@@ -164,7 +218,10 @@ input,select,textarea{font-family:inherit}
 </div>
 
 <script>
-const CATS = {graphics:"var(--graphics)", cyber:"var(--cyber)", ethics:"var(--ethics)"};
+/* Picks readable text (white or dark) for any class color, e.g. one coming from the database. */
+function inkOn(hex){ let h=String(hex).replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); const n=parseInt(h,16); const y=((n>>16&255)*299+((n>>8)&255)*587+(n&255)*114)/1000; return y>=150?"#1b1f2a":"#fff"; }
+/* One entry per class: just a name and a color. Everything else (faded, hover, selected, text color) is derived. */
+const CATS = {graphics:{name:"GRAPHICS",color:"#8b27c4"}, cyber:{name:"CYBERSECURITY",color:"#173a5e"}, ethics:{name:"ETHICS",color:"#ef1fb0"}};
 const SKILLS = [
   {name:"Using lines",   score:3.75, open:true},
   {name:"Using spheres", score:3.0,  open:false},
@@ -233,7 +290,8 @@ function studentsHTML(){
 }
 
 function paint(){
-  document.documentElement.style.setProperty("--cat", CATS[cat]);
+  document.documentElement.style.setProperty("--cat", CATS[cat].color);
+  document.documentElement.style.setProperty("--cat-ink", inkOn(CATS[cat].color));
   $("skillsList").innerHTML = skillsHTML(false); bindSkills($("skillsList"));
   if(view==="teacher"){
     $("overviewPane").innerHTML = overviewHTML();
@@ -243,6 +301,7 @@ function paint(){
   }
 }
 
+$("catTabs").innerHTML = Object.entries(CATS).map(([id,c])=>`<button class="cat-tab ${id===cat?"active":""}" data-cat="${id}" style="--c:${c.color};--ink:${inkOn(c.color)}">${c.name}</button>`).join("");
 $("catTabs").onclick = e=>{
   const t=e.target.closest(".cat-tab"); if(!t) return;
   cat=t.dataset.cat;
@@ -310,6 +369,23 @@ paint();
   window.addEventListener("resize", fades);
   new MutationObserver(fades).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
   fades();
+})();
+
+/* ---- profile dropdown ---- */
+(function(){
+  const btn=document.getElementById("avatarBtn"), menu=document.getElementById("profileMenu"); if(!btn||!menu) return;
+  const box=btn.closest(".profile"), name=(box.dataset.name||"").trim(), email=(box.dataset.email||"").trim(), pic=(box.dataset.picture||"").trim();
+  const head=menu.querySelector(".menu-head");
+  if(name) head.querySelector("b").textContent=name;
+  if(email) head.querySelector("span").textContent=email;
+  const parts=name.split(/\s+/).filter(Boolean);
+  const initials=(parts.length>1 ? parts[0][0]+parts[parts.length-1][0] : (parts[0]||"").slice(0,2)).toUpperCase();
+  if(initials) btn.textContent=initials;
+  if(pic){ const img=new Image(); img.alt=""; img.onload=()=>{ btn.textContent=""; btn.appendChild(img); }; img.src=pic; }
+  function set(o){ menu.classList.toggle("open",o); btn.setAttribute("aria-expanded",o); menu.setAttribute("aria-hidden",!o); }
+  btn.addEventListener("click", e=>{ e.stopPropagation(); set(!menu.classList.contains("open")); });
+  document.addEventListener("click", e=>{ if(!menu.contains(e.target)) set(false); });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape") set(false); });
 })();
 </script>
 </body>

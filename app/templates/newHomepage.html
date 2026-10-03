@@ -6,6 +6,9 @@
 <title>StuyOverflow</title>
 <style>
 :root{
+  /* Tab state equation (shared by all pages): a class tab is just its base color (--c) shown at one of three strengths.
+     faded = --tab-fade, hover = --tab-hover, selected = --tab-on. New classes only need a color; text color is picked automatically. */
+  --tab-fade:.3; --tab-hover:.6; --tab-on:1;
   --nav:#2f2f2f; --bg:#f3f5fa; --rail:#3f78bd; --ink:#232733; --muted:#6b7280; --line:#dfe5ee;
   --red:#ef3b34; --blue:#4a86c8; --green:#2e7d5b;
   --graphics:#8b27c4; --cyber:#173a5e; --ethics:#ef1fb0; --softdev:#f7941d;
@@ -14,6 +17,7 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%;width:100%;margin:0}
+@supports(height:100dvh){html,body{height:100dvh}}
 body{font-family:Calibri,Carlito,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer}
@@ -79,12 +83,12 @@ main{flex:1;overflow-y:auto;padding:26px 36px 56px;min-width:0}
 
 /* chips */
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
-.chip{border:none;padding:9px 26px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.3px;background:#e6eaf1;color:#9aa3b2;transition:all .15s}
-.chip[data-c="all"].on{background:#111;color:#fff}
-.chip:hover,.chip.on{color:#fff;background:var(--c,#111);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.chip{position:relative;top:0;border:none;padding:9px 26px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.3px;background:var(--c,#111);color:var(--ink,#fff);opacity:var(--tab-fade);box-shadow:var(--shadow);transition:opacity .3s ease,top .3s ease,box-shadow .3s ease}
+.chip:hover{opacity:var(--tab-hover);top:-2px;box-shadow:var(--shadow-hover)}
+.chip.on{opacity:var(--tab-on);box-shadow:var(--shadow-hover)}
 
 /* cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:26px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:26px}
 .grid.list{grid-template-columns:1fr}
 .card{background:#fff;border-radius:16px;padding:16px 22px;box-shadow:var(--shadow);cursor:pointer;position:relative;top:0;transition:top .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;gap:9px;border:none;text-align:left}
 .card:hover{top:-2px;box-shadow:var(--shadow-hover)}
@@ -127,6 +131,50 @@ main{flex:1;overflow-y:auto;padding:26px 36px 56px;min-width:0}
 .navlinks.fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 30px),transparent)}
 .navlinks.fade-l.fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to right,transparent,#000 30px,#000 calc(100% - 30px),transparent)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* profile menu */
+.profile{position:relative;flex-shrink:0}
+.avatar{border:none;padding:0;cursor:pointer;display:grid;place-items:center;font-size:13px;font-weight:700;color:#2f2f2f;overflow:hidden;transition:box-shadow .2s ease}
+.avatar:hover,.avatar[aria-expanded="true"]{box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.menu{position:absolute;right:0;top:calc(100% + 10px);width:250px;background:#fff;color:var(--ink);border-radius:14px;box-shadow:var(--shadow-hover);padding:8px;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s;z-index:30}
+.menu.open{opacity:1;visibility:visible}
+.menu-head{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu-head b{display:block;font-size:15px}
+.menu-head span{font-size:12.5px;color:var(--muted)}
+.menu a{display:block;padding:10px 12px;border-radius:8px;font-size:14px;color:var(--ink)}
+.menu a:hover{background:#eef2f8}
+.menu hr{border:none;border-top:1px solid var(--line);margin:6px 0}
+.menu a.danger{color:#c62828}
+.menu a.danger:hover{background:#fdecec}
+
+/* mobile nav: logo + buttons + avatar on row 1, tabs scroll on row 2 */
+@media(max-width:700px){
+  .topnav{height:auto;flex-wrap:wrap;padding:8px 12px 0;gap:0 10px}
+  .topnav>.logo,.topnav>.navright{height:46px;display:flex;align-items:center}
+  .logo{font-size:25px}
+  .navright{margin-left:auto;gap:8px}
+  .btn{padding:7px 12px;font-size:13px}
+  .navlinks{order:3;flex:1 0 100%;width:100%;gap:22px;font-size:14px}
+  .navlinks a{height:40px}
+  .navlinks a.active::after{bottom:4px}
+}
+
+@media(max-width:700px){
+  .shell{position:relative}
+  .rail{position:absolute;top:0;bottom:0;left:0;width:56px;padding:12px 0}
+  .shell.expanded .rail{width:210px;box-shadow:6px 0 24px rgba(20,30,60,.25)}
+  .rail a{width:40px;height:40px}
+  .shell.expanded .rail a{width:auto}
+  main{margin-left:56px;padding:16px 14px 40px}
+  .panel-open main{padding-right:14px}
+  .grid{gap:16px}
+  .card{padding:14px 16px}
+  .chip{padding:8px 16px}
+  .search{font-size:16px}
+  .panel-open .detail{position:fixed;inset:0;width:100%;z-index:20}
+  .detail-in{width:100%;padding:14px 16px 28px}
+}
 </style>
 </head>
 <body>
@@ -142,13 +190,24 @@ main{flex:1;overflow-y:auto;padding:26px 36px 56px;min-width:0}
   <div class="navright">
     <button class="btn btn-ask">Ask Question</button>
     <button class="btn btn-join">Join Class</button>
-    <div class="avatar" role="img" aria-label="Profile"></div>
+    <div class="profile" data-name="Frist Lsat" data-email="flast@example.com" data-picture="">
+      <!-- Set data-name, data-email and data-picture on .profile. Initials show by default; if data-picture is set and loads, the picture replaces them. -->
+      <button class="avatar" id="avatarBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileMenu" aria-label="Account menu">FL</button>
+      <div class="menu" id="profileMenu" role="menu" aria-hidden="true">
+        <div class="menu-head"><b>Frist Lsat</b><span>flast@example.com</span></div>
+        <a role="menuitem" href="#">My profile</a>
+        <a role="menuitem" href="#">Account settings</a>
+        <a role="menuitem" href="#">Help &amp; support</a>
+        <hr>
+        <a role="menuitem" class="danger" href="#">Log out</a>
+      </div>
+    </div>
   </div>
 </header>
 
 <div class="shell expanded" id="shell">
   <nav class="rail" aria-label="Filter post type">
-    <div class="filter">FILTER<br>POST<br>TYPE</div>
+    <div class="filter">FILTER BY POST TYPE</div>
     <a class="on" href="{{ url_for('home') }}" title="All"><span class="ico"><!-- svg: all --></span><span class="txt">All</span></a>
     <a href="{{ url_for('announcements') }}" title="Announcements"><span class="ico"><!-- svg: announcements --></span><span class="txt">Announcements</span></a>
     <a href="{{ url_for('questions') }}" title="Questions"><span class="ico"><!-- svg: questions --></span><span class="txt">Questions</span></a>
@@ -163,7 +222,10 @@ main{flex:1;overflow-y:auto;padding:26px 36px 56px;min-width:0}
 </div>
 
 <script>
+/* Picks readable text (white or dark) for any class color, e.g. one coming from the database. */
+function inkOn(hex){ let h=String(hex).replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); const n=parseInt(h,16); const y=((n>>16&255)*299+((n>>8)&255)*587+(n&255)*114)/1000; return y>=150?"#1b1f2a":"#fff"; }
 const CLS = {graphics:["GRAPHICS","#8b27c4"], cyber:["CYBERSECURITY","#173a5e"], ethics:["ETHICS","#ef1fb0"], softdev:["SOFTDEV","#f7941d"]};
+const tagStyle = k => `background:${CLS[k][1]};color:${inkOn(CLS[k][1])}`;
 /* Paste your SVG markup (as a string) for each post type. Empty = dashed placeholder box.
    q = question, a = announcement, n = note. Use fill="currentColor" so it picks up the card text color. */
 const TYPE_LABEL = {q:"Question", a:"Announcement", n:"Note"};
@@ -191,7 +253,7 @@ let selected = null;
 
 const cardHTML = (p, i) => `
   <button class="card" data-i="${i}">
-    <div class="top"><span class="tag" style="background:${CLS[p.c][1]}">${CLS[p.c][0]}</span>
+    <div class="top"><span class="tag" style="${tagStyle(p.c)}">${CLS[p.c][0]}</span>
       <span>Followups ${p.f}${p.hot?'<i class="dot"></i>':''}</span></div>
     <h4>${p.t}</h4><div class="by">By ${p.by}</div>
     <p>First few sentences first few sentences. First few sentences…</p>
@@ -213,7 +275,7 @@ function render(){
       </div>
       <div class="sec-body">
         <div class="chips">${[["all","ALL","#111"],...Object.entries(CLS).map(([k,v])=>[k,v[0],v[1]])]
-          .map(([k,l,c])=>`<button class="chip ${s.chip===k?"on":""}" data-c="${k}" style="--c:${c}">${l}</button>`).join("")}</div>
+          .map(([k,l,c])=>`<button class="chip ${s.chip===k?"on":""}" data-c="${k}" style="--c:${c};--ink:${inkOn(c)}">${l}</button>`).join("")}</div>
         <div class="grid ${s.view==="list"?"list":""}">${list.map(p=>cardHTML(p,POSTS.indexOf(p))).join("")||'<p style="color:#6b7280">No posts match.</p>'}</div>
       </div></section>`;
   }).join("");
@@ -239,6 +301,9 @@ const shell = document.getElementById("shell"), railBtn = document.getElementByI
 let railWas = true;
 function setRail(on){ shell.classList.toggle("expanded", on); railBtn.setAttribute("aria-expanded", on); }
 railBtn.onclick = ()=> setRail(!shell.classList.contains("expanded"));
+const isMobile = ()=> matchMedia("(max-width:700px)").matches;
+if(isMobile()){ setRail(false); railWas=false; }
+main.addEventListener("click", ()=>{ if(isMobile()) setRail(false); }, true);
 
 function openPost(i){
   const p = POSTS[i]; selected = i;
@@ -247,7 +312,7 @@ function openPost(i){
   shell.classList.add("panel-open");
   document.getElementById("detail").innerHTML = `
     <div class="detail-bar"><span>${CLS[p.c][0].toLowerCase()} post</span><button class="xbtn" id="closeBtn" aria-label="Close">&#10005;</button></div>
-    <span class="tag" style="background:${CLS[p.c][1]}">${CLS[p.c][0]}</span>
+    <span class="tag" style="${tagStyle(p.c)}">${CLS[p.c][0]}</span>
     <h2>${p.t}</h2>
     <div class="by" style="color:#6b7280;font-size:12px">Updated 5/17/2026 by ${p.by}</div>
     ${p.end?`<div class="endorse">Endorsed by instructor (${p.end})</div>`:""}
@@ -304,6 +369,23 @@ render();
   window.addEventListener("resize", fades);
   new MutationObserver(fades).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
   fades();
+})();
+
+/* ---- profile dropdown ---- */
+(function(){
+  const btn=document.getElementById("avatarBtn"), menu=document.getElementById("profileMenu"); if(!btn||!menu) return;
+  const box=btn.closest(".profile"), name=(box.dataset.name||"").trim(), email=(box.dataset.email||"").trim(), pic=(box.dataset.picture||"").trim();
+  const head=menu.querySelector(".menu-head");
+  if(name) head.querySelector("b").textContent=name;
+  if(email) head.querySelector("span").textContent=email;
+  const parts=name.split(/\s+/).filter(Boolean);
+  const initials=(parts.length>1 ? parts[0][0]+parts[parts.length-1][0] : (parts[0]||"").slice(0,2)).toUpperCase();
+  if(initials) btn.textContent=initials;
+  if(pic){ const img=new Image(); img.alt=""; img.onload=()=>{ btn.textContent=""; btn.appendChild(img); }; img.src=pic; }
+  function set(o){ menu.classList.toggle("open",o); btn.setAttribute("aria-expanded",o); menu.setAttribute("aria-hidden",!o); }
+  btn.addEventListener("click", e=>{ e.stopPropagation(); set(!menu.classList.contains("open")); });
+  document.addEventListener("click", e=>{ if(!menu.contains(e.target)) set(false); });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape") set(false); });
 })();
 </script>
 </body>

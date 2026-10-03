@@ -200,21 +200,22 @@ def render_post_page(page):
 @app.route("/announcements")
 @login_req
 def announcements():
-    return render_post_page("announcements")
+    # return render_post_page("announcements")
+    return render_template("announcements.html")
 
 
 
 @app.route("/saved")
 @login_req
 def saved():
-    # return render_template("saved.html")
-    return render_post_page("pinned")
+    return render_template("saved.html")
+    # return render_post_page("pinned")
 
 
 @app.route("/questions")
 @login_req
 def questions():
-    return render_post_page("questions")
+    return render_template("questions.html")
 
 
 @app.route("/chat")
@@ -226,13 +227,13 @@ def chat():
 @app.route("/resources")
 @login_req
 def resources():
-    return render_template("resources")
+    return render_template("resources.html")
 
 
 @app.route("/notes_resources")
 @login_req
 def notes_resources():
-    return render_post_page("notes_resources")
+    return render_template("notes_resources.html")
 
 
 @app.route("/account")
